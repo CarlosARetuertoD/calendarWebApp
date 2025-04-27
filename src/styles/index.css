@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+.responsive-container {
+    width: full;
+    height: 600px; /* Altura por defecto para pantallas grandes */
+    position: relative;
+  }
+  
+  @media screen and (max-width: 1024px) {
+    .responsive-container {
+      height: 500px;
+    }
+  }
+  
+  @media screen and (max-width: 768px) {
+    .responsive-container {
+      height: 400px;
+    }
+  }
+  
+  @media screen and (max-width: 480px) {
+    .responsive-container {
+      height: 300px;
+    }
+  }
+
+  /* width */
+::-webkit-scrollbar {
+  width: 10px;
+  z-index: -1;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+background: #d8d8d8;
+opacity: 10px;
+border-radius: 10px;
+}
+/* Handle */
+::-webkit-scrollbar-thumb:hover{
+background: #c9c9c9;
+opacity: 10px;
+border-radius: 10px;
+}
+
+body {
+height: 100vh;
+}
+
+
+/* Fondo general del calendario */
+.rbc-calendar {
+  background-color: #232227; /* gris oscuro */
+  color: #f9fafb;            /* texto blanco/gris claro */
+}
+
+/* Encabezado superior (toolbar) */
+.rbc-toolbar {
+  background-color: #232227;
+  color: #ffffff;
+  border-bottom: 1px solid #232227;
+}
+
+/* Botones de navegación (‹ Hoy ›) */
+.rbc-toolbar button {
+  background-color: #1f2937;
+  color: #f9fafb !important;
+  border: 1px solid #4b5563;
+  padding: 4px 10px;
+  margin: 0 4px;
+  border-radius: 4px;
+}
+
+.rbc-toolbar button:hover {
+  background-color: #b64725;
+}
+
+/* Encabezado de días (lunes, martes, ...) */
+.rbc-header {
+  background-color: #282c31;
+  color: #f3f4f6;
+  border-bottom: 1px solid #374151;
+  border-right: 1px solid #374151;
+  padding: 8px;
+}
+/* Aplica un fondo celeste claro a los sábados */
+.rbc-month-view .rbc-month-row .rbc-day-bg:nth-child(6) {
+  background-color: #80858B !important;
+}
+/* Días del mes */
+.rbc-month-view {
+  background-color: #f6eff3;
+}
+
+.rbc-day-bg {
+  background-color: #3b4656;
+}
+
+/* Día actual SIEMPRE visible, aunque sea domingo o fuera de mes */
+.rbc-month-view .rbc-date-cell.rbc-now,
+.rbc-month-view .rbc-day-bg.rbc-today {
+  background-color: #1facdf !important; /* azul fuerte */
+  color: white !important;
+}
+
+/* Días fuera del mes o domingos */
+.rbc-off-range-bg,
+.rbc-day-bg:nth-child(7n) {
+  background-color: #80858b !important;
+  color: #ffffff;
+}
+
+/* Popups de eventos */
+.rbc-overlay {
+  background-color: #1f2937;
+  color: white;
+  border: 1px solid #4b5563;
+}
+
+/* Popups internos */
+.rbc-overlay-header {
+  background-color: #374151;
+  color: white;
+}

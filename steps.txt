@@ -1,0 +1,5 @@
+python -m venv env
+./env/scripts/activate
+
+pip install django==5.2
+django-admin startproject core .
