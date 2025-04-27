@@ -11,7 +11,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', default='your secret key')
 
 DEBUG = 'RENDER' not in os.environ
 
-ALLOWED_HOSTS = ['calendarapp-wauo.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['*']
 
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
@@ -135,18 +135,3 @@ REST_FRAMEWORK = {
             "rest_framework.permissions.IsAuthenticatedOrReadOnly"
         ],
     }
-
-CORS_ORIGIN_WHITLIST = ['http://localhost:3000','http://localhost:8000','http://127.0.0.1:3000','http://127.0.0.1:8000',]
-
-CSRF_TRUSTED_ORIGINS = ['http://localhost:3000','http://localhost:8000','http://127.0.0.1:3000','http://127.0.0.1:8000',]
-
-EMAIL_BACKEND='djanco.core.mail.backends.console.EmailBackend'
-
-if not DEBUG:
-    ALLOWED_HOSTS=['http://localhost:3000','http://localhost:8000','http://127.0.0.1:3000','http://127.0.0.1:8000',]
-    CORS_ORIGIN_WHITLIST = ['http://localhost:3000','http://localhost:8000','http://127.0.0.1:3000','http://127.0.0.1:8000',]
-    CSRF_TRUSTED_ORIGINS = ['http://localhost:3000','http://localhost:8000','http://127.0.0.1:3000','http://127.0.0.1:8000',]
-    DATABASES = {
-        "default": env.db("DATABASE_URL"),
-    }
-    DATABASES["default"]["ATOMIC_REQUEST"] = True
