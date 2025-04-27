@@ -91,16 +91,6 @@ DATABASES = {
     )
 }
 
-#DATABASES = {
-#    'default': {
-#    'ENGINE': 'django.db.backends.postgresql',
-#    'NAME': env("DATABASE_NAME"),
-#    'USER': env("DATABASE_USER"),
-#    'PASSWORD' : env("DATABASE_PASSWORD"),
-#    'HOST' : env("DATABASE_HOST"),
-#    'PORT': 5432
-#   }
-#}
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
