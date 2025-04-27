@@ -143,9 +143,9 @@ CSRF_TRUSTED_ORIGINS = ['http://localhost:3000','http://localhost:8000','http://
 EMAIL_BACKEND='djanco.core.mail.backends.console.EmailBackend'
 
 if not DEBUG:
-    ALLOWED_HOSTS=env.list('ALLOWED_HOSTS_DEPLOY')
-    CORS_ORIGIN_WHITLIST = env.list('CORS_ORIGIN_WHITLIST_DEPLOY')
-    CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS_DEPLOY')
+    ALLOWED_HOSTS=['http://localhost:3000','http://localhost:8000','http://127.0.0.1:3000','http://127.0.0.1:8000',]
+    CORS_ORIGIN_WHITLIST = ['http://localhost:3000','http://localhost:8000','http://127.0.0.1:3000','http://127.0.0.1:8000',]
+    CSRF_TRUSTED_ORIGINS = ['http://localhost:3000','http://localhost:8000','http://127.0.0.1:3000','http://127.0.0.1:8000',]
     DATABASES = {
         "default": env.db("DATABASE_URL"),
     }
