@@ -1,7 +1,7 @@
 import Layout from "hocs/layouts/Layout"
 import Navbar from "components/navigation/NavbarLogin"
 import LoginSection from "components/login/Login"
-import background from 'assets/img/login-bg01.jpg'
+import background from '../../assets/img/login-bg01.jpg';
 
 function Login(){
   return (
