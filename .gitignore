@@ -16,7 +16,7 @@ media/              # Solo si usas archivos subidos
 
 # React build files (generados automáticamente)
 build/
-static/
+
 
 # Node modules (React frontend)
 node_modules/
