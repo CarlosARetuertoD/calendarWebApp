@@ -10,8 +10,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', default='your secret key')
 
 DEBUG = 'RENDER' not in os.environ
-
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost','127.0.0.0']
+#DEBUG = True
+ALLOWED_HOSTS = ['*','127.0.0.1', 'localhost','127.0.0.0']
 
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
@@ -29,6 +29,7 @@ DJANGO_APPS = [
 ]
 
 PROJECT_APPS = [
+
 ]
 
 THIRD_PARTY_APPS = [
@@ -85,10 +86,10 @@ TEMPLATES = [
 WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default='sqlite:///db.sqlite3',
-        conn_max_age=600
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -129,3 +130,11 @@ REST_FRAMEWORK = {
             "rest_framework.permissions.IsAuthenticatedOrReadOnly"
         ],
     }
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:3000',
+    'https://calendarapp-wauo.onrender.com',
+]
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:3000',
+    'https://calendarapp-wauo.onrender.com',
+]
