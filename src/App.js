@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import store from './store';
 import { Provider } from 'react-redux';
 
@@ -7,6 +7,7 @@ import Login from 'containers/pages/Login'
 import Calendar from 'containers/pages/Calendar'
 import RegistroLetras from 'containers/pages/RegistroLetras'
 import RegistroPedido from 'containers/pages/RegistroPedidos'
+
 function App() {
   return (
     <Provider store={store}>
