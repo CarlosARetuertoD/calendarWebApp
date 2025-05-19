@@ -19,6 +19,11 @@ const ThemeToggle = ({ inNavbar = false }) => {
     // Siempre inicializar en tema oscuro, independientemente del valor guardado
     document.documentElement.classList.add('dark');
     localStorage.setItem('theme', 'dark');
+    
+    // Agregar la clase theme-loaded después de un pequeño delay
+    setTimeout(() => {
+      document.documentElement.classList.add('theme-loaded');
+    }, 100);
   }, []);
 
   const toggleTheme = () => {

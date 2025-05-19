@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Prevenir parpadeo del tema */
+:root {
+  color-scheme: dark;
+}
+
+html {
+  visibility: hidden;
+}
+
+html.theme-loaded {
+  visibility: visible;
+}
+
 /* Estilos básicos y de scrollbar */
 body {
   height: 100vh;
@@ -128,5 +141,32 @@ span:not(.login-text) {
   .reportes-table td {
     @apply p-2 border border-nav-border-light;
   }
+}
+
+/* Estilos para menús desplegables */
+.dropdown-menu {
+  @apply absolute right-0 mt-2 py-2 w-56 bg-bg-card-light dark:bg-bg-card-dark rounded-md shadow-lg z-10 max-h-[calc(100vh-200px)] overflow-y-auto border border-nav-border-light dark:border-nav-border-dark;
+  transform-origin: top right;
+  transition: all 0.2s ease-in-out;
+}
+
+.dropdown-menu-enter {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.dropdown-menu-enter-active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.dropdown-menu-exit {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.dropdown-menu-exit-active {
+  opacity: 0;
+  transform: scale(0.95);
 }
 
