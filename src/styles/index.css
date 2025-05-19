@@ -33,11 +33,11 @@ body {
 
 /* Enlaces activos en navegación */
 .active-nav-link {
-  @apply border-b-2 border-primary text-primary font-semibold;
+  @apply border-b-2 border-nav-button-light dark:border-nav-button-dark text-nav-text-light dark:text-nav-text-dark font-semibold;
 }
 
 .active-dropdown-link {
-  @apply bg-bg-row-light dark:bg-bg-row-dark text-primary font-medium;
+  @apply bg-nav-button-hover-light dark:bg-nav-button-hover-dark text-nav-text-light dark:text-nav-text-dark font-medium;
 }
 
 /* Modo claro/oscuro y transiciones */
@@ -46,21 +46,25 @@ body {
 }
 
 /* Transiciones suaves entre modos */
-#navbar, button, a, div:not(.rbc-event), span {
+#navbar:not(.login-navbar), 
+button:not(.login-button), 
+a:not(.login-link), 
+div:not(.rbc-event):not(.login-container), 
+span:not(.login-text) {
   @apply transition-colors duration-300;
 }
 
 /* Estilos globales para tablas */
 .dark table {
-  @apply bg-bg-table-dark text-text-main-dark;
+  @apply bg-bg-table-dark text-nav-text-dark;
 }
 
 .dark th {
-  @apply bg-bg-row-dark text-text-main-dark;
+  @apply bg-bg-row-dark text-nav-text-dark;
 }
 
 .dark td {
-  @apply border-border-dark;
+  @apply border-nav-border-dark;
 }
 
 .dark tbody tr:hover {
@@ -110,7 +114,7 @@ body {
 /* Impresión de reportes */
 @media print {
   .reportes-container {
-    @apply bg-white text-black p-2 text-sm;
+    @apply bg-white text-nav-text-light p-2 text-sm;
   }
   
   .reportes-container h2 {
@@ -122,11 +126,11 @@ body {
   }
   
   .reportes-table th {
-    @apply bg-gray-100 text-black font-bold p-2 border border-gray-300;
+    @apply bg-nav-button-hover-light text-nav-text-light font-bold p-2 border border-nav-border-light;
   }
   
   .reportes-table td {
-    @apply p-2 border border-gray-300;
+    @apply p-2 border border-nav-border-light;
   }
 }
 

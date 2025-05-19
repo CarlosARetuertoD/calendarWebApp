@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import DotLoader from 'react-spinners/DotLoader';
 import Loader from "components/tools/Loader";
 import { login } from '../../utils/auth';
 
@@ -42,7 +41,7 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-full flex-col justify-center px-8 py-16 lg:px-10 text-white">
+    <div className="flex min-h-full flex-col justify-center px-8 py-16 lg:px-10 text-login-text">
       {/* Contenedor del logo y título */}
       <div className="flex items-center justify-center">
         <Loader />
@@ -55,7 +54,7 @@ export default function Login() {
           <div>
             <label
               htmlFor="username"
-              className="block text-2xl font-medium"
+              className="block text-2xl font-medium text-login-text"
             >
               Usuario
             </label>
@@ -68,11 +67,10 @@ export default function Login() {
                 onChange={handleChange}
                 required
                 className="
-                  block w-full rounded-lg bg-white bg-opacity-10
-                  px-4 py-3 text-xl text-white placeholder-white/50
-                  outline-1 outline-offset-1 outline-gray-300
-                  focus:outline-none
-                  focus:ring-2 focus:ring-offset-2 focus:ring-white
+                  block w-full rounded-lg bg-login-input-bg bg-opacity-10
+                  px-4 py-3 text-xl text-login-text placeholder-login-text/50
+                  border-0 outline-none
+                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-login-focus-ring
                 "
               />
             </div>
@@ -83,7 +81,7 @@ export default function Login() {
             <div className="flex items-center justify-between">
               <label
                 htmlFor="password"
-                className="block text-2xl font-medium"
+                className="block text-2xl font-medium text-login-text"
               >
                 Contraseña
               </label>
@@ -98,11 +96,10 @@ export default function Login() {
                 required
                 autoComplete="current-password"
                 className="
-                  block w-full rounded-lg bg-white bg-opacity-10
-                  px-4 py-3 text-xl text-white placeholder-white/50
-                  outline-1 outline-offset-1 outline-gray-300
-                  focus:outline-none
-                  focus:ring-2 focus:ring-offset-2 focus:ring-white
+                  block w-full rounded-lg bg-login-input-bg bg-opacity-10
+                  px-4 py-3 text-xl text-login-text placeholder-login-text/50
+                  border-0 outline-none
+                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-login-focus-ring
                 "
               />
             </div>
@@ -110,7 +107,7 @@ export default function Login() {
 
           {/* Mostrar error si existe */}
           {error && (
-            <div className="text-red-500 text-center">{error}</div>
+            <div className="text-error text-center">{error}</div>
           )}
 
           {/* Botón */}
@@ -120,22 +117,14 @@ export default function Login() {
               disabled={loading}
               className="
                 w-full flex justify-center items-center
-                rounded-lg bg-color-button px-8 py-3 text-2xl font-medium
-                text-white shadow-sm
-                hover:bg-white hover:text-black
+                rounded-lg bg-white px-8 py-3 text-2xl font-medium
+                text-black shadow-sm
+                hover:bg-black hover:text-white
                 transition duration-300 ease-in-out
-                focus:outline-none focus:ring-2 focus:ring-color-button focus:ring-offset-2
+                focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2
               "
             >
               Iniciar Sesión
-              {loading && (
-                <DotLoader
-                  loading={loading}
-                  size={24}
-                  color="#131313"
-                  className="ml-4"
-                />
-              )}
             </button>
           </div>
         </form>

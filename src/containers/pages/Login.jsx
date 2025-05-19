@@ -5,7 +5,7 @@ import background from '../../assets/img/login-bg01.jpg';
 
 function Login(){
   return (
-    <Layout noPadding={true}>
+    <Layout>
       <div className="relative min-h-screen">
         {/* 1) Capa de fondo con filtros */}
         <div
@@ -14,7 +14,7 @@ function Login(){
         />
 
         {/* 2) Capa de overlay para oscurecer más */}
-        <div className="absolute inset-0 bg-black opacity-40 pointer-events-none" />
+        <div className="absolute inset-0 bg-login-overlay/40 pointer-events-none" />
 
         {/* 3) Contenido encima */}
         <div className="relative z-10 flex flex-col min-h-screen">

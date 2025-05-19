@@ -33,7 +33,34 @@ module.exports = {
         'success': '#10B981',               // Verde para éxito
         'error': '#EF4444',                 // Rojo para errores
         'warning': '#F59E0B',               // Amarillo para advertencias
+
+        // Colores del Navbar
+        'nav-button-light': '#171717',      // Negro para botones en modo claro
+        'nav-button-dark': '#FFFFFF',       // Blanco para botones en modo oscuro
+        'nav-button-hover-light': '#1F2937', // Negro más oscuro para hover en modo claro
+        'nav-button-hover-dark': '#F3F4F6',  // Gris claro para hover en modo oscuro
+        'nav-text-light': '#111827',        // Negro para texto en modo claro
+        'nav-text-dark': '#F9FAFB',         // Blanco para texto en modo oscuro
+        'nav-border-light': '#E5E7EB',      // Borde gris claro para modo claro
+        'nav-border-dark': '#374151',       // Borde gris oscuro para modo oscuro
+        'logout-button-light': '#DC2626',   // Rojo para el botón de cerrar sesión en modo claro
+        'logout-button-dark': '#EF4444',    // Rojo más claro para el botón de cerrar sesión en modo oscuro
+        'logout-hover-light': '#B91C1C',    // Rojo más oscuro para hover en modo claro
+        'logout-hover-dark': '#DC2626',     // Rojo más oscuro para hover en modo oscuro
+
+        // Colores del Login
+        'login-bg': '#000000',              // Negro para el fondo
+        'login-overlay': '#000000',         // Negro para el overlay
+        'login-text': '#FFFFFF',            // Texto blanco para el login
+        'login-input-bg': '#FFFFFF',        // Fondo blanco para inputs
+        'login-input-border': '#E5E7EB',    // Borde gris para inputs
+        'login-button': '#FFFFFF',          // Botón blanco por defecto
+        'login-button-hover': '#000000',    // Botón negro en hover
+        'login-button-text': '#000000',     // Texto negro para el botón
+        'login-button-hover-text': '#FFFFFF', // Texto blanco para hover del botón
+        'login-focus-ring': '#FFFFFF',      // Anillo de focus negro
       },
+      
       animation: {
         'star-movement-bottom': 'star-movement-bottom linear infinite alternate',
         'star-movement-top': 'star-movement-top linear infinite alternate',

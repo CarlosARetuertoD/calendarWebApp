@@ -125,7 +125,7 @@ function Calendar() {
 
   return (
     <Layout>
-      <div className="sticky top-0 z-50 bg-bg-main-light dark:bg-bg-main-dark">
+      <div>
         <Navbar />
       </div>
       <div className="py-2 px-1 sm:px-3 md:px-6 bg-bg-main-light dark:bg-bg-main-dark min-h-screen mt-[120px] md:mt-[130px]">
