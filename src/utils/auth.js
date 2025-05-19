@@ -3,6 +3,10 @@ import axios from 'axios';
 // Configurar la URL base para todas las peticiones
 axios.defaults.baseURL = 'http://localhost:8000';
 
+// Configurar headers por defecto
+axios.defaults.headers.common['Content-Type'] = 'application/json';
+axios.defaults.headers.common['Accept'] = 'application/json';
+
 // Variable para indicar si la redirección por 401 está activada
 let enableRedirectOn401 = false;
 
@@ -18,15 +22,21 @@ export const setupAxiosInterceptors = () => {
     if (token) {
       config.headers.Authorization = `Token ${token}`;
     }
+    console.log('Configuración de la petición:', config);
     return config;
   }, error => {
+    console.error('Error en la petición:', error);
     return Promise.reject(error);
   });
 
   // Interceptor para redirigir al login en caso de error 401
   axios.interceptors.response.use(
-    response => response,
+    response => {
+      console.log('Respuesta recibida:', response);
+      return response;
+    },
     error => {
+      console.error('Error en la respuesta:', error);
       if (error.response && error.response.status === 401 && enableRedirectOn401) {
         // Solo redirigir si está habilitado
         console.log("Error 401 detectado, redirigiendo al login");

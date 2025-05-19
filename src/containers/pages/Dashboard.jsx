@@ -69,9 +69,7 @@ const Dashboard = () => {
 
   return (
     <Layout>
-      <div className="sticky top-0 z-50 bg-bg-main-light dark:bg-bg-main-dark">
-        <Navbar />
-      </div>
+      <Navbar />
       <div className="py-2 px-1 sm:px-3 md:px-6 bg-bg-main-light dark:bg-bg-main-dark min-h-screen mt-[120px] md:mt-[130px]">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-2xl font-bold text-text-main-light dark:text-text-main-dark mb-6">

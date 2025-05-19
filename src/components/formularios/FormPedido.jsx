@@ -171,21 +171,21 @@ const FormPedido = ({ handleClose, pedidoActual = null, onSubmitSuccess }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 bg-bg-form-light dark:bg-bg-form-dark p-5 rounded-lg">
+    <form onSubmit={handleSubmit} className="space-y-4 bg-bg-form-light dark:bg-bg-form-dark p-3 sm:p-5 rounded-lg">
       <div className="mb-3 pb-2 border-b border-border-light dark:border-border-dark">
-        <p className="text-sm text-text-secondary-light dark:text-text-secondary-dark">
+        <p className="text-xs sm:text-sm text-text-secondary-light dark:text-text-secondary-dark">
           Complete los campos marcados con <span className="text-error">*</span>
         </p>
       </div>
       
       {/* Primera fila - Proveedor */}
       <div>
-        <label className="block text-sm font-medium text-text-main-light dark:text-text-main-dark mb-1">
+        <label className="block text-xs sm:text-sm font-medium text-text-main-light dark:text-text-main-dark mb-1">
           Proveedor <span className="text-error">*</span>
         </label>
         <select
           name="proveedor"
-          className={`block w-full border ${errors.proveedor ? 'border-error' : 'border-border-light dark:border-border-dark'} rounded-md shadow-sm py-2 px-3 bg-bg-form-light dark:bg-bg-form-dark text-text-main-light dark:text-text-main-dark focus:outline-none focus:ring-primary focus:border-primary sm:text-sm`}
+          className={`block w-full border ${errors.proveedor ? 'border-error' : 'border-border-light dark:border-border-dark'} rounded-md shadow-sm py-1.5 sm:py-2 px-2 sm:px-3 bg-bg-form-light dark:bg-bg-form-dark text-xs sm:text-sm text-text-main-light dark:text-text-main-dark focus:outline-none focus:ring-primary focus:border-primary`}
           value={formData.proveedor}
           onChange={handleChange}
         >
@@ -196,17 +196,17 @@ const FormPedido = ({ handleClose, pedidoActual = null, onSubmitSuccess }) => {
             </option>
           ))}
         </select>
-        {errors.proveedor && <p className="mt-1 text-sm text-error">{errors.proveedor}</p>}
+        {errors.proveedor && <p className="mt-1 text-xs sm:text-sm text-error">{errors.proveedor}</p>}
       </div>
 
       {/* Segunda fila - Monto y Fecha */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
         <div>
-          <label className="block text-sm font-medium text-text-main-light dark:text-text-main-dark mb-1">
+          <label className="block text-xs sm:text-sm font-medium text-text-main-light dark:text-text-main-dark mb-1">
             Monto Total (S/) <span className="text-error">*</span>
           </label>
           <div className="relative">
-            <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-text-secondary-light dark:text-text-secondary-dark">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-2 sm:pl-3 pointer-events-none text-xs sm:text-sm text-text-secondary-light dark:text-text-secondary-dark">
               S/
             </span>
             <input
@@ -214,33 +214,33 @@ const FormPedido = ({ handleClose, pedidoActual = null, onSubmitSuccess }) => {
               name="monto_total_pedido"
               step="0.01"
               min="0"
-              className={`block w-full border ${errors.monto_total_pedido ? 'border-error' : 'border-border-light dark:border-border-dark'} rounded-md shadow-sm py-2 pl-8 pr-3 bg-bg-form-light dark:bg-bg-form-dark text-text-main-light dark:text-text-main-dark focus:outline-none focus:ring-primary focus:border-primary sm:text-sm`}
+              className={`block w-full border ${errors.monto_total_pedido ? 'border-error' : 'border-border-light dark:border-border-dark'} rounded-md shadow-sm py-1.5 sm:py-2 pl-6 sm:pl-8 pr-2 sm:pr-3 bg-bg-form-light dark:bg-bg-form-dark text-xs sm:text-sm text-text-main-light dark:text-text-main-dark focus:outline-none focus:ring-primary focus:border-primary`}
               value={formData.monto_total_pedido}
               onChange={handleChange}
             />
           </div>
-          {errors.monto_total_pedido && <p className="mt-1 text-sm text-error">{errors.monto_total_pedido}</p>}
+          {errors.monto_total_pedido && <p className="mt-1 text-xs sm:text-sm text-error">{errors.monto_total_pedido}</p>}
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-text-main-light dark:text-text-main-dark mb-1">
+          <label className="block text-xs sm:text-sm font-medium text-text-main-light dark:text-text-main-dark mb-1">
             Fecha de Pedido <span className="text-error">*</span>
           </label>
           <input
             type="date"
             name="fecha_pedido"
-            className={`block w-full border ${errors.fecha_pedido ? 'border-error' : 'border-border-light dark:border-border-dark'} rounded-md shadow-sm py-2 px-3 bg-bg-form-light dark:bg-bg-form-dark text-text-main-light dark:text-text-main-dark focus:outline-none focus:ring-primary focus:border-primary sm:text-sm`}
+            className={`block w-full border ${errors.fecha_pedido ? 'border-error' : 'border-border-light dark:border-border-dark'} rounded-md shadow-sm py-1.5 sm:py-2 px-2 sm:px-3 bg-bg-form-light dark:bg-bg-form-dark text-xs sm:text-sm text-text-main-light dark:text-text-main-dark focus:outline-none focus:ring-primary focus:border-primary`}
             value={formData.fecha_pedido}
             onChange={handleChange}
           />
-          {errors.fecha_pedido && <p className="mt-1 text-sm text-error">{errors.fecha_pedido}</p>}
+          {errors.fecha_pedido && <p className="mt-1 text-xs sm:text-sm text-error">{errors.fecha_pedido}</p>}
         </div>
       </div>
 
       {/* Tercera fila - Tipo de Pedido y Número o Plazo*/}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
         <div>
-          <label className="block text-sm font-medium text-text-main-light dark:text-text-main-dark mb-1">
+          <label className="block text-xs sm:text-sm font-medium text-text-main-light dark:text-text-main-dark mb-1">
             Tipo de Pedido
           </label>
           <div className="mt-1">
@@ -253,10 +253,10 @@ const FormPedido = ({ handleClose, pedidoActual = null, onSubmitSuccess }) => {
                 onChange={handleChange}
                 className="sr-only"
               />
-              <span className={`relative inline-block w-10 h-5 rounded-full transition-colors ${formData.es_contado ? 'bg-primary' : 'bg-gray-300 dark:bg-gray-600'}`}>
-                <span className={`absolute left-0.5 top-0.5 bg-white w-4 h-4 rounded-full transition-transform ${formData.es_contado ? 'transform translate-x-5' : ''}`}></span>
+              <span className={`relative inline-block w-9 sm:w-10 h-4 sm:h-5 rounded-full transition-colors ${formData.es_contado ? 'bg-primary' : 'bg-bg-row-light dark:bg-bg-row-dark'}`}>
+                <span className={`absolute left-0.5 top-0.5 bg-bg-form-light dark:bg-bg-form-dark w-3 sm:w-4 h-3 sm:h-4 rounded-full transition-transform ${formData.es_contado ? 'transform translate-x-5' : ''}`}></span>
               </span>
-              <span className="ml-2 text-sm text-text-main-light dark:text-text-main-dark">
+              <span className="ml-2 text-xs sm:text-sm text-text-main-light dark:text-text-main-dark">
                 {formData.es_contado ? 'Al contado' : 'A crédito'}
               </span>
             </label>
@@ -270,13 +270,13 @@ const FormPedido = ({ handleClose, pedidoActual = null, onSubmitSuccess }) => {
         
         {pedidoActual ? (
           <div>
-            <label className="block text-sm font-medium text-text-main-light dark:text-text-main-dark mb-1">
+            <label className="block text-xs sm:text-sm font-medium text-text-main-light dark:text-text-main-dark mb-1">
               Número de Pedido
             </label>
             <input
               type="text"
               name="numero_pedido"
-              className="block w-full border border-border-light dark:border-border-dark rounded-md shadow-sm py-2 px-3 bg-bg-form-light dark:bg-bg-form-dark text-text-main-light dark:text-text-main-dark focus:outline-none sm:text-sm"
+              className="block w-full border border-border-light dark:border-border-dark rounded-md shadow-sm py-1.5 sm:py-2 px-2 sm:px-3 bg-bg-form-light dark:bg-bg-form-dark text-xs sm:text-sm text-text-main-light dark:text-text-main-dark focus:outline-none"
               value={formData.numero_pedido || '(Se generará automáticamente)'}
               readOnly
             />
@@ -287,18 +287,18 @@ const FormPedido = ({ handleClose, pedidoActual = null, onSubmitSuccess }) => {
         ) : (
           !formData.es_contado && (
             <div>
-              <label className="block text-sm font-medium text-text-main-light dark:text-text-main-dark mb-1">
+              <label className="block text-xs sm:text-sm font-medium text-text-main-light dark:text-text-main-dark mb-1">
                 Plazo (días) <span className="text-error">*</span>
               </label>
               <input
                 type="number"
                 name="plazo_dias"
                 min="1"
-                className={`block w-full border ${errors.plazo_dias ? 'border-error' : 'border-border-light dark:border-border-dark'} rounded-md shadow-sm py-2 px-3 bg-bg-form-light dark:bg-bg-form-dark text-text-main-light dark:text-text-main-dark focus:outline-none focus:ring-primary focus:border-primary sm:text-sm`}
+                className={`block w-full border ${errors.plazo_dias ? 'border-error' : 'border-border-light dark:border-border-dark'} rounded-md shadow-sm py-1.5 sm:py-2 px-2 sm:px-3 bg-bg-form-light dark:bg-bg-form-dark text-xs sm:text-sm text-text-main-light dark:text-text-main-dark focus:outline-none focus:ring-primary focus:border-primary`}
                 value={formData.plazo_dias}
                 onChange={handleChange}
               />
-              {errors.plazo_dias && <p className="mt-1 text-sm text-error">{errors.plazo_dias}</p>}
+              {errors.plazo_dias && <p className="mt-1 text-xs sm:text-sm text-error">{errors.plazo_dias}</p>}
             </div>
           )
         )}
@@ -306,18 +306,18 @@ const FormPedido = ({ handleClose, pedidoActual = null, onSubmitSuccess }) => {
         {/* Si está editando y no es al contado, mostrar el campo de plazo */}
         {pedidoActual && !formData.es_contado && (
           <div>
-            <label className="block text-sm font-medium text-text-main-light dark:text-text-main-dark mb-1">
+            <label className="block text-xs sm:text-sm font-medium text-text-main-light dark:text-text-main-dark mb-1">
               Plazo (días) <span className="text-error">*</span>
             </label>
             <input
               type="number"
               name="plazo_dias"
               min="1"
-              className={`block w-full border ${errors.plazo_dias ? 'border-error' : 'border-border-light dark:border-border-dark'} rounded-md shadow-sm py-2 px-3 bg-bg-form-light dark:bg-bg-form-dark text-text-main-light dark:text-text-main-dark focus:outline-none focus:ring-primary focus:border-primary sm:text-sm`}
+              className={`block w-full border ${errors.plazo_dias ? 'border-error' : 'border-border-light dark:border-border-dark'} rounded-md shadow-sm py-1.5 sm:py-2 px-2 sm:px-3 bg-bg-form-light dark:bg-bg-form-dark text-xs sm:text-sm text-text-main-light dark:text-text-main-dark focus:outline-none focus:ring-primary focus:border-primary`}
               value={formData.plazo_dias}
               onChange={handleChange}
             />
-            {errors.plazo_dias && <p className="mt-1 text-sm text-error">{errors.plazo_dias}</p>}
+            {errors.plazo_dias && <p className="mt-1 text-xs sm:text-sm text-error">{errors.plazo_dias}</p>}
           </div>
         )}
       </div>
@@ -325,12 +325,12 @@ const FormPedido = ({ handleClose, pedidoActual = null, onSubmitSuccess }) => {
       {/* Campo para cambiar el estado - Solo visible al editar */}
       {pedidoActual && (
         <div>
-          <label className="block text-sm font-medium text-text-main-light dark:text-text-main-dark mb-1">
+          <label className="block text-xs sm:text-sm font-medium text-text-main-light dark:text-text-main-dark mb-1">
             Estado
           </label>
           <select
             name="estado"
-            className="block w-full border border-border-light dark:border-border-dark rounded-md shadow-sm py-2 px-3 bg-bg-form-light dark:bg-bg-form-dark text-text-main-light dark:text-text-main-dark focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+            className="block w-full border border-border-light dark:border-border-dark rounded-md shadow-sm py-1.5 sm:py-2 px-2 sm:px-3 bg-bg-form-light dark:bg-bg-form-dark text-xs sm:text-sm text-text-main-light dark:text-text-main-dark focus:outline-none focus:ring-primary focus:border-primary"
             value={formData.estado}
             onChange={handleChange}
           >
@@ -347,24 +347,24 @@ const FormPedido = ({ handleClose, pedidoActual = null, onSubmitSuccess }) => {
 
       {/* Descripción */}
       <div>
-        <label className="block text-sm font-medium text-text-main-light dark:text-text-main-dark mb-1">
+        <label className="block text-xs sm:text-sm font-medium text-text-main-light dark:text-text-main-dark mb-1">
           Descripción
         </label>
         <textarea
           name="descripcion"
           rows="3"
           placeholder="Detalles del pedido (opcional)"
-          className="block w-full border border-border-light dark:border-border-dark rounded-md shadow-sm py-2 px-3 bg-bg-form-light dark:bg-bg-form-dark text-text-main-light dark:text-text-main-dark focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+          className="block w-full border border-border-light dark:border-border-dark rounded-md shadow-sm py-1.5 sm:py-2 px-2 sm:px-3 bg-bg-form-light dark:bg-bg-form-dark text-xs sm:text-sm text-text-main-light dark:text-text-main-dark focus:outline-none focus:ring-primary focus:border-primary"
           value={formData.descripcion}
           onChange={handleChange}
         ></textarea>
       </div>
 
       {/* Botones */}
-      <div className="flex justify-end space-x-3 pt-4 mt-4 border-t border-border-light dark:border-border-dark">
+      <div className="flex justify-end space-x-2 sm:space-x-3 pt-3 sm:pt-4 mt-3 sm:mt-4 border-t border-border-light dark:border-border-dark">
         <button
           type="button"
-          className="px-4 py-2 border border-border-light dark:border-border-dark rounded-md shadow-sm text-sm font-medium text-text-main-light dark:text-text-main-dark bg-bg-form-light dark:bg-bg-form-dark hover:bg-bg-row-light dark:hover:bg-bg-row-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+          className="px-3 sm:px-4 py-1.5 sm:py-2 border border-border-light dark:border-border-dark rounded-md shadow-sm text-xs sm:text-sm font-medium text-text-main-light dark:text-text-main-dark bg-bg-form-light dark:bg-bg-form-dark hover:bg-bg-row-light dark:hover:bg-bg-row-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
           onClick={handleClose}
           disabled={isLoading}
         >
@@ -372,7 +372,7 @@ const FormPedido = ({ handleClose, pedidoActual = null, onSubmitSuccess }) => {
         </button>
         <button
           type="submit"
-          className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-3 sm:px-4 py-1.5 sm:py-2 border border-transparent rounded-md shadow-sm text-xs sm:text-sm font-medium text-white bg-primary hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={isLoading}
         >
           {isLoading ? 'Guardando...' : pedidoActual ? 'Actualizar' : 'Guardar'}
