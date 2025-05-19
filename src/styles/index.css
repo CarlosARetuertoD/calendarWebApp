@@ -36,10 +36,6 @@ body {
   @apply border-b-2 border-nav-button-light dark:border-nav-button-dark text-nav-text-light dark:text-nav-text-dark font-semibold;
 }
 
-.active-dropdown-link {
-  @apply bg-nav-button-hover-light dark:bg-nav-button-hover-dark text-nav-text-light dark:text-nav-text-dark font-medium;
-}
-
 /* Modo claro/oscuro y transiciones */
 body {
   @apply transition-colors duration-300;

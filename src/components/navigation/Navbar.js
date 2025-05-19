@@ -198,7 +198,7 @@ function Navbar(){
               {/* Botones de la primera fila: tema y cerrar sesión */}
               <div className="flex items-center justify-end px-4">
                 {userData && (
-                  <span className="text-xs font-medium text-nav-text-light dark:text-nav-text-dark mr-3">
+                  <span className="text-sm font-medium text-nav-text-light dark:text-nav-text-dark mr-3">
                     Hola, {userData.first_name ? 
                       userData.first_name.split(' ').map(word => 
                         word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
@@ -225,7 +225,7 @@ function Navbar(){
           {authenticated && (
             <div className="hidden md:flex items-center space-x-3 pr-2 md:pr-6">
               {userData && (
-                <span className="text-sm sm:text-base md:text-lg font-medium text-nav-text-light dark:text-nav-text-dark">
+                <span className="text-base sm:text-lg md:text-xl font-medium text-nav-text-light dark:text-nav-text-dark">
                   Hola, {userData.first_name ? 
                     userData.first_name.split(' ').map(word => 
                       word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
@@ -270,7 +270,7 @@ function Navbar(){
                     <NavLink 
                       to='/registro-pedidos' 
                       className={({isActive}) => 
-                        `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-nav-button-hover-light dark:hover:bg-nav-button-hover-dark ${isActive ? 'active-dropdown-link' : ''}`
+                        `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-bg-main-light hover:text-text-main-light dark:hover:bg-bg-main-dark dark:hover:text-text-main-dark ${isActive ? 'bg-bg-main-light text-text-main-light dark:bg-bg-main-dark dark:text-text-main-dark' : ''}`
                       }
                       onClick={() => closeAllMenus()}
                     >
@@ -279,7 +279,7 @@ function Navbar(){
                     <NavLink 
                       to='/registro-distribuciones' 
                       className={({isActive}) => 
-                        `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-nav-button-hover-light dark:hover:bg-nav-button-hover-dark ${isActive ? 'active-dropdown-link' : ''}`
+                        `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-bg-main-light hover:text-text-main-light dark:hover:bg-bg-main-dark dark:hover:text-text-main-dark ${isActive ? 'bg-bg-main-light text-text-main-light dark:bg-bg-main-dark dark:text-text-main-dark' : ''}`
                       }
                       onClick={() => closeAllMenus()}
                     >
@@ -288,7 +288,7 @@ function Navbar(){
                     <NavLink 
                       to='/registro-letras' 
                       className={({isActive}) => 
-                        `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-nav-button-hover-light dark:hover:bg-nav-button-hover-dark ${isActive ? 'active-dropdown-link' : ''}`
+                        `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-bg-main-light hover:text-text-main-light dark:hover:bg-bg-main-dark dark:hover:text-text-main-dark ${isActive ? 'bg-bg-main-light text-text-main-light dark:bg-bg-main-dark dark:text-text-main-dark' : ''}`
                       }
                       onClick={() => closeAllMenus()}
                     >
@@ -297,7 +297,7 @@ function Navbar(){
                     <NavLink 
                       to='/registros' 
                       className={({isActive}) => 
-                        `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-nav-button-hover-light dark:hover:bg-nav-button-hover-dark ${isActive ? 'active-dropdown-link' : ''}`
+                        `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-bg-main-light hover:text-text-main-light dark:hover:bg-bg-main-dark dark:hover:text-text-main-dark ${isActive ? 'bg-bg-main-light text-text-main-light dark:bg-bg-main-dark dark:text-text-main-dark' : ''}`
                       }
                       onClick={() => closeAllMenus()}
                     >
@@ -306,7 +306,7 @@ function Navbar(){
                     <NavLink 
                       to='/registro-documentos' 
                       className={({isActive}) => 
-                        `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-nav-button-hover-light dark:hover:bg-nav-button-hover-dark ${isActive ? 'active-dropdown-link' : ''}`
+                        `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-bg-main-light hover:text-text-main-light dark:hover:bg-bg-main-dark dark:hover:text-text-main-dark ${isActive ? 'bg-bg-main-light text-text-main-light dark:bg-bg-main-dark dark:text-text-main-dark' : ''}`
                       }
                       onClick={() => closeAllMenus()}
                     >
@@ -334,7 +334,7 @@ function Navbar(){
                   <NavLink 
                     to='/reportes/letras/estado' 
                     className={({isActive}) => 
-                      `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-nav-button-hover-light dark:hover:bg-nav-button-hover-dark ${isActive ? 'active-dropdown-link' : ''}`
+                      `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-bg-main-light hover:text-text-main-light dark:hover:bg-bg-main-dark dark:hover:text-text-main-dark ${isActive ? 'bg-bg-main-light text-text-main-light dark:bg-bg-main-dark dark:text-text-main-dark' : ''}`
                     }
                     onClick={() => closeAllMenus()}
                   >
@@ -343,7 +343,7 @@ function Navbar(){
                   <NavLink 
                     to='/reportes/letras/proveedor' 
                     className={({isActive}) => 
-                      `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-nav-button-hover-light dark:hover:bg-nav-button-hover-dark ${isActive ? 'active-dropdown-link' : ''}`
+                      `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-bg-main-light hover:text-text-main-light dark:hover:bg-bg-main-dark dark:hover:text-text-main-dark ${isActive ? 'bg-bg-main-light text-text-main-light dark:bg-bg-main-dark dark:text-text-main-dark' : ''}`
                     }
                     onClick={() => closeAllMenus()}
                   >
@@ -352,7 +352,7 @@ function Navbar(){
                   <NavLink 
                     to='/reportes/letras/periodo' 
                     className={({isActive}) => 
-                      `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-nav-button-hover-light dark:hover:bg-nav-button-hover-dark ${isActive ? 'active-dropdown-link' : ''}`
+                      `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-bg-main-light hover:text-text-main-light dark:hover:bg-bg-main-dark dark:hover:text-text-main-dark ${isActive ? 'bg-bg-main-light text-text-main-light dark:bg-bg-main-dark dark:text-text-main-dark' : ''}`
                     }
                     onClick={() => closeAllMenus()}
                   >
@@ -363,7 +363,7 @@ function Navbar(){
                   <NavLink 
                     to='/reportes/pedidos/proveedor' 
                     className={({isActive}) => 
-                      `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-nav-button-hover-light dark:hover:bg-nav-button-hover-dark ${isActive ? 'active-dropdown-link' : ''}`
+                      `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-bg-main-light hover:text-text-main-light dark:hover:bg-bg-main-dark dark:hover:text-text-main-dark ${isActive ? 'bg-bg-main-light text-text-main-light dark:bg-bg-main-dark dark:text-text-main-dark' : ''}`
                     }
                     onClick={() => closeAllMenus()}
                   >
@@ -372,7 +372,7 @@ function Navbar(){
                   <NavLink 
                     to='/reportes/pedidos/empresa' 
                     className={({isActive}) => 
-                      `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-nav-button-hover-light dark:hover:bg-nav-button-hover-dark ${isActive ? 'active-dropdown-link' : ''}`
+                      `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-bg-main-light hover:text-text-main-light dark:hover:bg-bg-main-dark dark:hover:text-text-main-dark ${isActive ? 'bg-bg-main-light text-text-main-light dark:bg-bg-main-dark dark:text-text-main-dark' : ''}`
                     }
                     onClick={() => closeAllMenus()}
                   >
@@ -383,7 +383,7 @@ function Navbar(){
                   <NavLink 
                     to='/reportes/facturas' 
                     className={({isActive}) => 
-                      `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-nav-button-hover-light dark:hover:bg-nav-button-hover-dark ${isActive ? 'active-dropdown-link' : ''}`
+                      `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-bg-main-light hover:text-text-main-light dark:hover:bg-bg-main-dark dark:hover:text-text-main-dark ${isActive ? 'bg-bg-main-light text-text-main-light dark:bg-bg-main-dark dark:text-text-main-dark' : ''}`
                     }
                     onClick={() => closeAllMenus()}
                   >
@@ -392,7 +392,7 @@ function Navbar(){
                   <NavLink 
                     to='/reportes/balance' 
                     className={({isActive}) => 
-                      `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-nav-button-hover-light dark:hover:bg-nav-button-hover-dark ${isActive ? 'active-dropdown-link' : ''}`
+                      `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-bg-main-light hover:text-text-main-light dark:hover:bg-bg-main-dark dark:hover:text-text-main-dark ${isActive ? 'bg-bg-main-light text-text-main-light dark:bg-bg-main-dark dark:text-text-main-dark' : ''}`
                     }
                     onClick={() => closeAllMenus()}
                   >
@@ -440,7 +440,7 @@ function Navbar(){
                           <NavLink 
                             to='/inventario/productos' 
                             className={({isActive}) => 
-                              `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-nav-button-hover-light dark:hover:bg-nav-button-hover-dark ${isActive ? 'active-dropdown-link' : ''}`
+                              `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-bg-main-light hover:text-text-main-light dark:hover:bg-bg-main-dark dark:hover:text-text-main-dark ${isActive ? 'bg-bg-main-light text-text-main-light dark:bg-bg-main-dark dark:text-text-main-dark' : ''}`
                             }
                             onClick={() => closeAllMenus()}
                           >
@@ -449,7 +449,7 @@ function Navbar(){
                           <NavLink 
                             to='/inventario/categorias' 
                             className={({isActive}) => 
-                              `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-nav-button-hover-light dark:hover:bg-nav-button-hover-dark ${isActive ? 'active-dropdown-link' : ''}`
+                              `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-bg-main-light hover:text-text-main-light dark:hover:bg-bg-main-dark dark:hover:text-text-main-dark ${isActive ? 'bg-bg-main-light text-text-main-light dark:bg-bg-main-dark dark:text-text-main-dark' : ''}`
                             }
                             onClick={() => closeAllMenus()}
                           >
@@ -458,7 +458,7 @@ function Navbar(){
                           <NavLink 
                             to='/inventario/movimientos' 
                             className={({isActive}) => 
-                              `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-nav-button-hover-light dark:hover:bg-nav-button-hover-dark ${isActive ? 'active-dropdown-link' : ''}`
+                              `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-bg-main-light hover:text-text-main-light dark:hover:bg-bg-main-dark dark:hover:text-text-main-dark ${isActive ? 'bg-bg-main-light text-text-main-light dark:bg-bg-main-dark dark:text-text-main-dark' : ''}`
                             }
                             onClick={() => closeAllMenus()}
                           >
@@ -472,7 +472,7 @@ function Navbar(){
                       <NavLink 
                         to='/inventario/stock' 
                         className={({isActive}) => 
-                          `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-nav-button-hover-light dark:hover:bg-nav-button-hover-dark ${isActive ? 'active-dropdown-link' : ''}`
+                          `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-bg-main-light hover:text-text-main-light dark:hover:bg-bg-main-dark dark:hover:text-text-main-dark ${isActive ? 'bg-bg-main-light text-text-main-light dark:bg-bg-main-dark dark:text-text-main-dark' : ''}`
                         }
                         onClick={() => closeAllMenus()}
                       >
@@ -481,7 +481,7 @@ function Navbar(){
                       <NavLink 
                         to='/inventario/valorizado' 
                         className={({isActive}) => 
-                          `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-nav-button-hover-light dark:hover:bg-nav-button-hover-dark ${isActive ? 'active-dropdown-link' : ''}`
+                          `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-bg-main-light hover:text-text-main-light dark:hover:bg-bg-main-dark dark:hover:text-text-main-dark ${isActive ? 'bg-bg-main-light text-text-main-light dark:bg-bg-main-dark dark:text-text-main-dark' : ''}`
                         }
                         onClick={() => closeAllMenus()}
                       >
@@ -508,7 +508,7 @@ function Navbar(){
                         <NavLink 
                           to='/registro-pedidos' 
                           className={({isActive}) => 
-                            `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-nav-button-hover-light dark:hover:bg-nav-button-hover-dark ${isActive ? 'active-dropdown-link' : ''}`
+                            `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-bg-main-light hover:text-text-main-light dark:hover:bg-bg-main-dark dark:hover:text-text-main-dark ${isActive ? 'bg-bg-main-light text-text-main-light dark:bg-bg-main-dark dark:text-text-main-dark' : ''}`
                           }
                           onClick={() => closeAllMenus()}
                         >
@@ -517,7 +517,7 @@ function Navbar(){
                         <NavLink 
                           to='/registro-distribuciones' 
                           className={({isActive}) => 
-                            `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-nav-button-hover-light dark:hover:bg-nav-button-hover-dark ${isActive ? 'active-dropdown-link' : ''}`
+                            `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-bg-main-light hover:text-text-main-light dark:hover:bg-bg-main-dark dark:hover:text-text-main-dark ${isActive ? 'bg-bg-main-light text-text-main-light dark:bg-bg-main-dark dark:text-text-main-dark' : ''}`
                           }
                           onClick={() => closeAllMenus()}
                         >
@@ -526,7 +526,7 @@ function Navbar(){
                         <NavLink 
                           to='/registro-letras' 
                           className={({isActive}) => 
-                            `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-nav-button-hover-light dark:hover:bg-nav-button-hover-dark ${isActive ? 'active-dropdown-link' : ''}`
+                            `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-bg-main-light hover:text-text-main-light dark:hover:bg-bg-main-dark dark:hover:text-text-main-dark ${isActive ? 'bg-bg-main-light text-text-main-light dark:bg-bg-main-dark dark:text-text-main-dark' : ''}`
                           }
                           onClick={() => closeAllMenus()}
                         >
@@ -535,7 +535,7 @@ function Navbar(){
                         <NavLink 
                           to='/registros' 
                           className={({isActive}) => 
-                            `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-nav-button-hover-light dark:hover:bg-nav-button-hover-dark ${isActive ? 'active-dropdown-link' : ''}`
+                            `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-bg-main-light hover:text-text-main-light dark:hover:bg-bg-main-dark dark:hover:text-text-main-dark ${isActive ? 'bg-bg-main-light text-text-main-light dark:bg-bg-main-dark dark:text-text-main-dark' : ''}`
                           }
                           onClick={() => closeAllMenus()}
                         >
@@ -544,7 +544,7 @@ function Navbar(){
                         <NavLink 
                           to='/registro-documentos' 
                           className={({isActive}) => 
-                            `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-nav-button-hover-light dark:hover:bg-nav-button-hover-dark ${isActive ? 'active-dropdown-link' : ''}`
+                            `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-bg-main-light hover:text-text-main-light dark:hover:bg-bg-main-dark dark:hover:text-text-main-dark ${isActive ? 'bg-bg-main-light text-text-main-light dark:bg-bg-main-dark dark:text-text-main-dark' : ''}`
                           }
                           onClick={() => closeAllMenus()}
                         >
@@ -572,7 +572,7 @@ function Navbar(){
                       <NavLink 
                         to='/reportes/letras/estado' 
                         className={({isActive}) => 
-                          `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-nav-button-hover-light dark:hover:bg-nav-button-hover-dark ${isActive ? 'active-dropdown-link' : ''}`
+                          `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-bg-main-light hover:text-text-main-light dark:hover:bg-bg-main-dark dark:hover:text-text-main-dark ${isActive ? 'bg-bg-main-light text-text-main-light dark:bg-bg-main-dark dark:text-text-main-dark' : ''}`
                         }
                         onClick={() => closeAllMenus()}
                       >
@@ -581,7 +581,7 @@ function Navbar(){
                       <NavLink 
                         to='/reportes/letras/proveedor' 
                         className={({isActive}) => 
-                          `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-nav-button-hover-light dark:hover:bg-nav-button-hover-dark ${isActive ? 'active-dropdown-link' : ''}`
+                          `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-bg-main-light hover:text-text-main-light dark:hover:bg-bg-main-dark dark:hover:text-text-main-dark ${isActive ? 'bg-bg-main-light text-text-main-light dark:bg-bg-main-dark dark:text-text-main-dark' : ''}`
                         }
                         onClick={() => closeAllMenus()}
                       >
@@ -590,7 +590,7 @@ function Navbar(){
                       <NavLink 
                         to='/reportes/letras/periodo' 
                         className={({isActive}) => 
-                          `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-nav-button-hover-light dark:hover:bg-nav-button-hover-dark ${isActive ? 'active-dropdown-link' : ''}`
+                          `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-bg-main-light hover:text-text-main-light dark:hover:bg-bg-main-dark dark:hover:text-text-main-dark ${isActive ? 'bg-bg-main-light text-text-main-light dark:bg-bg-main-dark dark:text-text-main-dark' : ''}`
                         }
                         onClick={() => closeAllMenus()}
                       >
@@ -601,7 +601,7 @@ function Navbar(){
                       <NavLink 
                         to='/reportes/pedidos/proveedor' 
                         className={({isActive}) => 
-                          `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-nav-button-hover-light dark:hover:bg-nav-button-hover-dark ${isActive ? 'active-dropdown-link' : ''}`
+                          `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-bg-main-light hover:text-text-main-light dark:hover:bg-bg-main-dark dark:hover:text-text-main-dark ${isActive ? 'bg-bg-main-light text-text-main-light dark:bg-bg-main-dark dark:text-text-main-dark' : ''}`
                         }
                         onClick={() => closeAllMenus()}
                       >
@@ -610,7 +610,7 @@ function Navbar(){
                       <NavLink 
                         to='/reportes/pedidos/empresa' 
                         className={({isActive}) => 
-                          `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-nav-button-hover-light dark:hover:bg-nav-button-hover-dark ${isActive ? 'active-dropdown-link' : ''}`
+                          `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-bg-main-light hover:text-text-main-light dark:hover:bg-bg-main-dark dark:hover:text-text-main-dark ${isActive ? 'bg-bg-main-light text-text-main-light dark:bg-bg-main-dark dark:text-text-main-dark' : ''}`
                         }
                         onClick={() => closeAllMenus()}
                       >
@@ -621,7 +621,7 @@ function Navbar(){
                       <NavLink 
                         to='/reportes/facturas' 
                         className={({isActive}) => 
-                          `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-nav-button-hover-light dark:hover:bg-nav-button-hover-dark ${isActive ? 'active-dropdown-link' : ''}`
+                          `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-bg-main-light hover:text-text-main-light dark:hover:bg-bg-main-dark dark:hover:text-text-main-dark ${isActive ? 'bg-bg-main-light text-text-main-light dark:bg-bg-main-dark dark:text-text-main-dark' : ''}`
                         }
                         onClick={() => closeAllMenus()}
                       >
@@ -630,7 +630,7 @@ function Navbar(){
                       <NavLink 
                         to='/reportes/balance' 
                         className={({isActive}) => 
-                          `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-nav-button-hover-light dark:hover:bg-nav-button-hover-dark ${isActive ? 'active-dropdown-link' : ''}`
+                          `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-bg-main-light hover:text-text-main-light dark:hover:bg-bg-main-dark dark:hover:text-text-main-dark ${isActive ? 'bg-bg-main-light text-text-main-light dark:bg-bg-main-dark dark:text-text-main-dark' : ''}`
                         }
                         onClick={() => closeAllMenus()}
                       >
@@ -659,7 +659,7 @@ function Navbar(){
                         <NavLink 
                           to='/administracion' 
                           className={({isActive}) => 
-                            `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-nav-button-hover-light dark:hover:bg-nav-button-hover-dark ${isActive ? 'active-dropdown-link' : ''}`
+                            `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-bg-main-light hover:text-text-main-light dark:hover:bg-bg-main-dark dark:hover:text-text-main-dark ${isActive ? 'bg-bg-main-light text-text-main-light dark:bg-bg-main-dark dark:text-text-main-dark' : ''}`
                           }
                           onClick={() => closeAllMenus()}
                         >
@@ -668,7 +668,7 @@ function Navbar(){
                         <a 
                           href="http://localhost:8000/admin/" 
                           target="_blank"
-                          className="block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-nav-button-hover-light dark:hover:bg-nav-button-hover-dark"
+                          className="block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-bg-main-light dark:hover:bg-bg-main-dark"
                           onClick={() => closeAllMenus()}
                         >
                           Acceso al Admin Django
@@ -679,7 +679,7 @@ function Navbar(){
                         <NavLink 
                           to='/admin/logs' 
                           className={({isActive}) => 
-                            `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-nav-button-hover-light dark:hover:bg-nav-button-hover-dark ${isActive ? 'active-dropdown-link' : ''}`
+                            `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-bg-main-light dark:hover:bg-bg-main-dark dark:hover:text-white ${isActive ? 'bg-bg-main-light dark:bg-bg-main-dark dark:text-white' : ''}`
                           }
                           onClick={() => closeAllMenus()}
                         >
@@ -688,7 +688,7 @@ function Navbar(){
                         <NavLink 
                           to='/admin/backup' 
                           className={({isActive}) => 
-                            `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-nav-button-hover-light dark:hover:bg-nav-button-hover-dark ${isActive ? 'active-dropdown-link' : ''}`
+                            `block px-4 py-2 text-xs sm:text-sm text-nav-text-light dark:text-nav-text-dark hover:bg-bg-main-light dark:hover:bg-bg-main-dark dark:hover:text-white ${isActive ? 'bg-bg-main-light dark:bg-bg-main-dark dark:text-white' : ''}`
                           }
                           onClick={() => closeAllMenus()}
                         >
