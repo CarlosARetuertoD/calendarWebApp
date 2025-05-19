@@ -412,64 +412,66 @@ const TablaRegistroPedidos = ({
 
           {/* Modal de Detalles */}
           {showDetallesModal && selectedPedido && (
-            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-              <div className="bg-bg-card-light dark:bg-bg-card-dark rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-border-light dark:border-border-dark">
-                <div className="p-6">
-                  <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-bold text-text-main-light dark:text-text-main-dark">
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-2 sm:p-4 overflow-y-auto">
+              <div className="bg-bg-card-light dark:bg-bg-card-dark rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] sm:max-h-[80vh] overflow-y-auto border border-border-light dark:border-border-dark">
+                <div className="p-3 sm:p-6">
+                  <div className="flex justify-between items-center mb-4 sticky top-0 bg-bg-card-light dark:bg-bg-card-dark py-2 z-[101]">
+                    <h2 className="text-base sm:text-lg font-bold text-text-main-light dark:text-text-main-dark">
                       Detalles del Pedido
                     </h2>
                     <button
                       onClick={closeDetallesModal}
-                      className="text-text-secondary-light dark:text-text-secondary-dark hover:text-text-main-light dark:hover:text-text-main-dark"
+                      className="text-text-secondary-light dark:text-text-secondary-dark hover:text-text-main-light dark:hover:text-text-main-dark focus:outline-none text-lg sm:text-xl"
                     >
-                      <span className="text-2xl">&times;</span>
+                      &times;
                     </button>
                   </div>
 
-                  <div className="space-y-4">
+                  <div className="space-y-3 sm:space-y-4">
                     {/* Información básica */}
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <h3 className="text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark">Proveedor</h3>
-                        <p className="mt-1 text-sm text-text-main-light dark:text-text-main-dark">
-                          {selectedPedido.proveedor?.nombre || selectedPedido.proveedor_nombre || '-'}
-                        </p>
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark">Número de Pedido</h3>
-                        <p className="mt-1 text-sm text-text-main-light dark:text-text-main-dark">
-                          {selectedPedido.numero_pedido || 'Pendiente'}
-                        </p>
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark">Fecha</h3>
-                        <p className="mt-1 text-sm text-text-main-light dark:text-text-main-dark">
-                          {formatFecha(selectedPedido.fecha_pedido)}
-                        </p>
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark">Estado</h3>
-                        <p className="mt-1">
-                          <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getEstadoClass(selectedPedido.estado)}`}>
-                            {selectedPedido.estado.charAt(0).toUpperCase() + selectedPedido.estado.slice(1)}
-                          </span>
-                        </p>
+                    <div className="bg-bg-form-light dark:bg-bg-form-dark rounded-lg p-3 sm:p-4">
+                      <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                        <div>
+                          <h3 className="text-xs sm:text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark">Proveedor</h3>
+                          <p className="mt-1 text-xs sm:text-sm text-text-main-light dark:text-text-main-dark">
+                            {selectedPedido.proveedor?.nombre || selectedPedido.proveedor_nombre || '-'}
+                          </p>
+                        </div>
+                        <div>
+                          <h3 className="text-xs sm:text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark">Número de Pedido</h3>
+                          <p className="mt-1 text-xs sm:text-sm text-text-main-light dark:text-text-main-dark">
+                            {selectedPedido.numero_pedido || 'Pendiente'}
+                          </p>
+                        </div>
+                        <div>
+                          <h3 className="text-xs sm:text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark">Fecha</h3>
+                          <p className="mt-1 text-xs sm:text-sm text-text-main-light dark:text-text-main-dark">
+                            {formatFecha(selectedPedido.fecha_pedido)}
+                          </p>
+                        </div>
+                        <div>
+                          <h3 className="text-xs sm:text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark">Estado</h3>
+                          <p className="mt-1">
+                            <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getEstadoClass(selectedPedido.estado)}`}>
+                              {selectedPedido.estado.charAt(0).toUpperCase() + selectedPedido.estado.slice(1)}
+                            </span>
+                          </p>
+                        </div>
                       </div>
                     </div>
 
                     {/* Montos y distribución */}
-                    <div className="border-t border-border-light dark:border-border-dark pt-4">
-                      <h3 className="text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark mb-2">Montos</h3>
-                      <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-bg-form-light dark:bg-bg-form-dark rounded-lg p-3 sm:p-4">
+                      <h3 className="text-xs sm:text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark mb-2">Montos</h3>
+                      <div className="grid grid-cols-2 gap-2 sm:gap-3">
                         <div>
-                          <p className="text-sm text-text-secondary-light dark:text-text-secondary-dark">Monto Total</p>
-                          <p className="mt-1 text-sm font-medium text-text-main-light dark:text-text-main-dark">
+                          <p className="text-xs sm:text-sm text-text-secondary-light dark:text-text-secondary-dark">Monto Total</p>
+                          <p className="mt-1 text-xs sm:text-sm font-medium text-text-main-light dark:text-text-main-dark">
                             S/ {parseFloat(selectedPedido.monto_total_pedido).toLocaleString('es-PE', { minimumFractionDigits: 2 })}
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm text-text-secondary-light dark:text-text-secondary-dark">Tipo</p>
+                          <p className="text-xs sm:text-sm text-text-secondary-light dark:text-text-secondary-dark">Tipo</p>
                           <p className="mt-1">
                             <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
                               selectedPedido.es_contado 
@@ -485,22 +487,22 @@ const TablaRegistroPedidos = ({
 
                     {/* Descripción */}
                     {selectedPedido.descripcion && (
-                      <div className="border-t border-border-light dark:border-border-dark pt-4">
-                        <h3 className="text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark mb-2">Descripción</h3>
-                        <p className="text-sm text-text-main-light dark:text-text-main-dark">
+                      <div className="bg-bg-form-light dark:bg-bg-form-dark rounded-lg p-3 sm:p-4">
+                        <h3 className="text-xs sm:text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark mb-2">Descripción</h3>
+                        <p className="text-xs sm:text-sm text-text-main-light dark:text-text-main-dark">
                           {selectedPedido.descripcion}
                         </p>
                       </div>
                     )}
 
                     {/* Botones de acción */}
-                    <div className="border-t border-border-light dark:border-border-dark pt-4 flex justify-end space-x-3">
+                    <div className="flex flex-wrap gap-2 sm:gap-3 justify-end">
                       <button
                         onClick={() => {
                           closeDetallesModal();
                           onEditarPedido(selectedPedido);
                         }}
-                        className="px-4 py-2 text-sm font-medium text-primary hover:text-primary/90 dark:text-primary/90 dark:hover:text-primary"
+                        className="px-3 py-1.5 text-xs sm:text-sm font-medium text-primary hover:text-primary/90 dark:text-primary/90 dark:hover:text-primary"
                       >
                         Editar
                       </button>
@@ -510,7 +512,7 @@ const TablaRegistroPedidos = ({
                             closeDetallesModal();
                             onDistribuirPedido(selectedPedido);
                           }}
-                          className="px-4 py-2 text-sm font-medium text-success hover:text-success/90 dark:text-success/90 dark:hover:text-success"
+                          className="px-3 py-1.5 text-xs sm:text-sm font-medium text-success hover:text-success/90 dark:text-success/90 dark:hover:text-success"
                         >
                           Distribuir
                         </button>
@@ -520,7 +522,7 @@ const TablaRegistroPedidos = ({
                           closeDetallesModal();
                           onEliminarPedido(selectedPedido.id);
                         }}
-                        className="px-4 py-2 text-sm font-medium text-error hover:text-error/90 dark:text-error/90 dark:hover:text-error"
+                        className="px-3 py-1.5 text-xs sm:text-sm font-medium text-error hover:text-error/90 dark:text-error/90 dark:hover:text-error"
                       >
                         Eliminar
                       </button>
