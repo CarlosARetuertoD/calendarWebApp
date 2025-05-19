@@ -1,16 +1,13 @@
 from pathlib import Path
 import os 
-import environ
 import dj_database_url
-env = environ.Env()
-environ.Env.read_env()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get('SECRET_KEY', default='your secret key')
+SECRET_KEY = 'django-insecure-sdfksdf7y2834y723647623467234623kjhsdf'
 
-DEBUG = 'RENDER' not in os.environ
-#DEBUG = True
+#DEBUG = 'RENDER' not in os.environ
+DEBUG = True
 ALLOWED_HOSTS = ['*','127.0.0.1', 'localhost','127.0.0.0']
 
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
@@ -30,11 +27,14 @@ DJANGO_APPS = [
 
 PROJECT_APPS = [
     'calendarBackend',
+    'authentication',
+    'administracion',
 ]
 
 THIRD_PARTY_APPS = [
     'corsheaders',
     'rest_framework',
+    'rest_framework.authtoken',
     'ckeditor',
     'ckeditor_uploader',
 ]
@@ -64,6 +64,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'administracion.middleware.ActivityLogMiddleware',  # Middleware para registro de actividad
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -85,33 +86,20 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-#DATABASES = {
- #   'default': {
-  #      'ENGINE': 'django.db.backends.sqlite3',
-  #      'NAME': BASE_DIR / 'db.sqlite3',
-   # }
-#}
 DATABASES = {
-    'default': dj_database_url.config(
-       default='sqlite:///db.sqlite3',
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
+#DATABASES = {
+ #   'default': dj_database_url.config(
+  #     default='sqlite:///db.sqlite3',
+   # )
+#}
+AUTH_PASSWORD_VALIDATORS = []
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-es'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
@@ -130,10 +118,21 @@ MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
-        "DEFAULT_PERMISSION_CLASSES" : [
-            "rest_framework.permissions.IsAuthenticatedOrReadOnly"
-        ],
-    }
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated"
+    ]
+}
+
+# Configuración de seguridad
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',
     'http://localhost:8000',

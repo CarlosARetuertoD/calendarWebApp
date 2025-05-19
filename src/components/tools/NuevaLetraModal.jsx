@@ -13,11 +13,11 @@ const NuevaLetraModal = ({ fechas = [], form, onChange, onSave, onClose }) => {
         </button>
 
         <h2 className="text-xl font-bold mb-4 text-gray-800">
-          📝 Registrar nueva letra
+          📝 Registrar nuevas letras
         </h2>
 
-        {/* Mostrar fechas seleccionadas si hay más de una */}
-        {fechas.length > 1 && (
+        {/* Mostrar fechas seleccionadas */}
+        {fechas.length > 0 && (
           <div className="bg-gray-100 p-3 rounded text-sm text-gray-700 mb-4">
             <p className="font-medium mb-1">📆 Fechas seleccionadas:</p>
             <ul className="list-disc list-inside space-y-1">
@@ -28,42 +28,22 @@ const NuevaLetraModal = ({ fechas = [], form, onChange, onSave, onClose }) => {
           </div>
         )}
 
+        {/* Campo para ingresar el monto que se repetirá */}
         <div className="space-y-3">
-          <input
-            type="text"
-            name="numero"
-            placeholder="Número único"
-            value={form.numero}
-            onChange={onChange}
-            className="w-full border p-2 rounded"
-          />
           <input
             type="number"
             name="monto"
-            placeholder="Monto"
+            placeholder="Monto por letra"
             value={form.monto}
             onChange={onChange}
             className="w-full border p-2 rounded"
           />
-          <select
-            name="beneficiario"
-            value={form.beneficiario}
-            onChange={onChange}
-            className="w-full border p-2 rounded"
-          >
-            <option value="">Selecciona beneficiario</option>
-            <option value="Pionier">Pionier</option>
-            <option value="Wrangler">Wrangler</option>
-            <option value="Norton">Norton</option>
-            <option value="Vowh">Vowh</option>
-            <option value="Metal">Metal</option>
-            <option value="Préstamo">Préstamo</option>
-          </select>
+
           <button
             onClick={onSave}
             className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-500"
           >
-            Guardar letra{fechas.length > 1 ? 's' : ''}
+            Guardar {fechas.length} letra{fechas.length !== 1 ? 's' : ''}
           </button>
         </div>
       </div>

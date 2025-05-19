@@ -1,55 +1,148 @@
-import 'react-big-calendar/lib/css/react-big-calendar.css';
-import Navbar from "components/navigation/Navbar"
-import Layout from "hocs/layouts/Layout"
+import { useEffect, useState, useRef } from "react";
+import axios from "axios";
+import Navbar from "components/navigation/Navbar";
+import Layout from "hocs/layouts/Layout";
+import BigCalendar from "components/calendar/BigCalendar";
+import { isAuthenticated } from "../../utils/auth";
+import { useNavigate } from "react-router-dom";
 
-import BigCalendar from 'components/calendar/BigCalendar';
-
-const eventos = [
-    // Letras con beneficiarios aleatorios y número único
-    { title: '102341 - S/ 1200 (Pionier)', start: new Date(2025, 3, 1), end: new Date(2025, 3, 1), allDay: true, resource: { beneficiario: 'Pionier' }},
-    { title: '202556 - S/ 1200 (Wrangler)', start: new Date(2025, 3, 2), end: new Date(2025, 3, 2), allDay: true, resource: { beneficiario: 'Wrangler' }},
-    { title: '202556 - S/ 2200 (Wrangler)', start: new Date(2025, 3, 2), end: new Date(2025, 3, 2), allDay: true, resource: { beneficiario: 'Norton' }},
-    { title: '202556 - S/ 2500 (Wrangler)', start: new Date(2025, 3, 2), end: new Date(2025, 3, 2), allDay: true, resource: { beneficiario: 'Pionier' }},
-    { title: '301789 - S/ 1350 (Norton)', start: new Date(2025, 3, 3), end: new Date(2025, 3, 3), allDay: true, resource: { beneficiario: 'Norton' }},
-    { title: '404123 - S/ 950 (Vowh)', start: new Date(2025, 3, 4), end: new Date(2025, 3, 4), allDay: true, resource: { beneficiario: 'Vowh' }},
-    { title: '509331 - S/ 2100 (Metal)', start: new Date(2025, 3, 5), end: new Date(2025, 3, 5), allDay: true, resource: { beneficiario: 'Metal' }},
-    { title: '102342 - S/ 1100 (Pionier)', start: new Date(2025, 3, 6), end: new Date(2025, 3, 6), allDay: true, resource: { beneficiario: 'Pionier' }},
-    { title: '202557 - S/ 1600 (Wrangler)', start: new Date(2025, 3, 7), end: new Date(2025, 3, 7), allDay: true, resource: { beneficiario: 'Wrangler' }},
-    { title: '301790 - S/ 1800 (Norton)', start: new Date(2025, 3, 8), end: new Date(2025, 3, 8), allDay: true, resource: { beneficiario: 'Norton' }},
-    { title: '404124 - S/ 1250 (Vowh)', start: new Date(2025, 3, 9), end: new Date(2025, 3, 9), allDay: true, resource: { beneficiario: 'Vowh' }},
-    { title: '509332 - S/ 1700 (Metal)', start: new Date(2025, 3, 10), end: new Date(2025, 3, 10), allDay: true, resource: { beneficiario: 'Metal' }},
-    { title: '102343 - S/ 1400 (Pionier)', start: new Date(2025, 3, 11), end: new Date(2025, 3, 11), allDay: true, resource: { beneficiario: 'Pionier' }},
-    { title: '202558 - S/ 1500 (Wrangler)', start: new Date(2025, 3, 12), end: new Date(2025, 3, 12), allDay: true, resource: { beneficiario: 'Wrangler' }},
-    { title: '301791 - S/ 1300 (Norton)', start: new Date(2025, 3, 13), end: new Date(2025, 3, 13), allDay: true, resource: { beneficiario: 'Norton' }},
-    { title: '404125 - S/ 1000 (Vowh)', start: new Date(2025, 3, 14), end: new Date(2025, 3, 14), allDay: true, resource: { beneficiario: 'Vowh' }},
-    { title: '509333 - S/ 1900 (Metal)', start: new Date(2025, 3, 15), end: new Date(2025, 3, 15), allDay: true, resource: { beneficiario: 'Metal' }},
-    { title: '102344 - S/ 950 (Pionier)', start: new Date(2025, 3, 16), end: new Date(2025, 3, 16), allDay: true, resource: { beneficiario: 'Pionier' }},
-    { title: '202559 - S/ 1750 (Wrangler)', start: new Date(2025, 3, 17), end: new Date(2025, 3, 17), allDay: true, resource: { beneficiario: 'Wrangler' }},
-    { title: '301792 - S/ 1600 (Norton)', start: new Date(2025, 3, 18), end: new Date(2025, 3, 18), allDay: true, resource: { beneficiario: 'Norton' }},
-    { title: '404126 - S/ 800 (Vowh)', start: new Date(2025, 3, 19), end: new Date(2025, 3, 19), allDay: true, resource: { beneficiario: 'Vowh' }},
-    { title: '509334 - S/ 2000 (Metal)', start: new Date(2025, 3, 20), end: new Date(2025, 3, 20), allDay: true, resource: { beneficiario: 'Metal' }},
-    { title: '301792 - S/ 1600 (Norton)', start: new Date(2025, 3, 21), end: new Date(2025, 3, 21), allDay: true, resource: { beneficiario: 'Norton' }},
-    // Pagos de préstamo
-    { title: '500001 - S/ 3000 (Préstamo)', start: new Date(2025, 3, 3), end: new Date(2025, 3, 3), allDay: true, resource: { beneficiario: 'Préstamo' }},
-    { title: '500002 - S/ 2800 (Préstamo)', start: new Date(2025, 3, 9), end: new Date(2025, 3, 9), allDay: true, resource: { beneficiario: 'Préstamo' }},
-    { title: '500003 - S/ 2500 (Préstamo)', start: new Date(2025, 3, 15), end: new Date(2025, 3, 15), allDay: true, resource: { beneficiario: 'Préstamo' }},
-    { title: '500004 - S/ 2700 (Préstamo)', start: new Date(2025, 3, 22), end: new Date(2025, 3, 22), allDay: true, resource: { beneficiario: 'Préstamo' }},
-    { title: '500005 - S/ 2900 (Préstamo)', start: new Date(2025, 3, 28), end: new Date(2025, 3, 28), allDay: true, resource: { beneficiario: 'Préstamo' }},
-  ];
+function Calendar() {
+  const [eventos, setEventos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [authenticated, setAuthenticated] = useState(isAuthenticated());
+  const navigate = useNavigate();
+  const containerRef = useRef(null);
   
-function Calendar(){
-    return(
-        <Layout>
-            <div className="p-6">
-                <Navbar/>
+  // Estado para la altura del calendario
+  const [calendarHeight, setCalendarHeight] = useState(0);
+
+  // Función para calcular la altura disponible
+  const calculateHeight = () => {
+    if (!containerRef.current) return;
+    
+    // Espacio total de la ventana - posición del contenedor - margen inferior
+    const windowHeight = window.innerHeight;
+    const containerTop = containerRef.current.getBoundingClientRect().top;
+    const bottomMargin = 20; // margen inferior para evitar scroll
+    
+    // Establecer alturas mínimas según el tamaño de pantalla
+    let minHeight = 400; // valor base para móviles pequeños
+    
+    if (window.innerWidth >= 768 && window.innerWidth < 1024) {
+      // Para tablets
+      minHeight = 550;
+    } else if (window.innerWidth >= 1024) {
+      // Para desktop
+      minHeight = 650;
+    }
+    
+    const availableHeight = windowHeight - containerTop - bottomMargin;
+    setCalendarHeight(Math.max(minHeight, availableHeight));
+  };
+
+  useEffect(() => {
+    // Calcular altura inicial después de que el componente se monte
+    calculateHeight();
+    
+    // Recalcular cuando cambie el tamaño de la ventana
+    const handleResize = () => {
+      calculateHeight();
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    // Solo cargar datos si el usuario está autenticado
+    if (!authenticated) {
+      navigate('/');
+      return;
+    }
+
+    const cargarEventos = async () => {
+      try {
+        // Usar URL relativa para que funcione con la configuración de axios
+        const res = await axios.get("/api/letras/");
+        
+        const letras = res.data.map((letra, index) => {
+          const fecha = new Date(`${letra.fecha_pago}T12:00:00`);
+          return {
+            title: `${index + 1} - S/ ${letra.monto} (${letra.empresa})`,
+            start: fecha,
+            end: fecha,
+            allDay: true,
+            resource: {
+              estado: letra.estado,
+              empresa: letra.empresa,
+              color: letra.color
+            }
+          };
+        });
+
+        setEventos(letras);
+        setLoading(false);
+        
+        // Recalcular altura después de cargar datos
+        setTimeout(calculateHeight, 100);
+      } catch (error) {
+        console.error("❌ Error al cargar letras:", error);
+        setError("Error al cargar los datos. Inicia sesión nuevamente o contacta al administrador.");
+        setLoading(false);
+        
+        // Si es error de autenticación, esperar un momento y luego redireccionar al login
+        if (error.response && error.response.status === 401) {
+          setTimeout(() => navigate('/'), 2000);
+        }
+      }
+    };
+
+    cargarEventos();
+
+    // Comprobar autenticación cuando la ventana obtiene el foco
+    const handleFocus = () => {
+      const isAuth = isAuthenticated();
+      setAuthenticated(isAuth);
+      if (!isAuth) {
+        navigate('/');
+      } else {
+        // Recalcular altura al volver a la pestaña
+        setTimeout(calculateHeight, 100);
+      }
+    };
+    
+    window.addEventListener('focus', handleFocus);
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [navigate, authenticated]);
+
+  // Si no está autenticado, no renderizar nada (la redirección ocurrirá en el useEffect)
+  if (!authenticated) {
+    return null;
+  }
+
+  return (
+    <Layout>
+      <div className="sticky top-0 z-50 bg-bg-main-light dark:bg-bg-main-dark">
+        <Navbar />
+      </div>
+      <div className="py-2 px-1 sm:px-3 md:px-6 bg-bg-main-light dark:bg-bg-main-dark min-h-screen mt-[120px] md:mt-[130px]">
+        <div className="max-w-7xl mx-auto">
+          {loading ? (
+            <p className="text-center py-2 md:py-6">Cargando letras...</p>
+          ) : error ? (
+            <div className="text-red-600 text-center p-2 md:p-6 bg-red-100 rounded-lg my-1 md:my-4">
+              {error}
             </div>
-            <div className="p-6 pt-10">
-                <BigCalendar
-                    eventos={eventos}
-                    altura={800}
-                />
-            </div>
-        </Layout>
-    )
+          ) : (
+            <BigCalendar eventos={eventos} altura={calendarHeight} />
+          )}
+        </div>
+      </div>
+    </Layout>
+  );
 }
-export default Calendar
+
+export default Calendar;

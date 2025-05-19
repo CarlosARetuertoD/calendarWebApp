@@ -5,9 +5,8 @@ import background from '../../assets/img/login-bg01.jpg';
 
 function Login(){
   return (
-    <Layout>
+    <Layout noPadding={true}>
       <div className="relative min-h-screen">
-
         {/* 1) Capa de fondo con filtros */}
         <div
           className="absolute inset-0 bg-cover bg-center filter blur-sm brightness-75"

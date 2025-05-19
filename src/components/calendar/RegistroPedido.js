@@ -1,494 +1,371 @@
 // src/components/pedidos/RegistroPedido.js
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import FormPedido from '../formularios/FormPedido';
 
 const RegistroPedido = () => {
-  const beneficiarios = ['Pionier', 'Wrangler', 'Norton', 'Vowh', 'Metal', 'Préstamo'];
-
-  // —— Estados generales —————————————————————————
   const [pedidos, setPedidos] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [estadoFilter, setEstadoFilter] = useState('todos');
-  const [selectedPedidoId, setSelectedPedidoId] = useState(null);
-
-  // Formularios visibles
-  const [showPedidoForm, setShowPedidoForm] = useState(false);
-  const [showGuiaForm, setShowGuiaForm] = useState(false);
-
-  // —— Pedido —————————————————————————————————————
-  const [nuevoPedido, setNuevoPedido] = useState({
-    beneficiario: '',
-    montoTotal: '',
-    fecha: '',
+  const [proveedores, setProveedores] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [currentPedido, setCurrentPedido] = useState(null);
+  const [filtros, setFiltros] = useState({
+    proveedor: '',
+    estado: '',
+    fechaDesde: '',
+    fechaHasta: ''
   });
-  const [errorsPedido, setErrorsPedido] = useState({});
 
-  const validarPedido = () => {
-    const errs = {};
-    if (!nuevoPedido.beneficiario) errs.beneficiario = 'Requerido';
-    if (!nuevoPedido.montoTotal || isNaN(nuevoPedido.montoTotal) || nuevoPedido.montoTotal <= 0)
-      errs.montoTotal = 'Debe ser un número positivo';
-    if (!nuevoPedido.fecha) errs.fecha = 'Requerido';
-    setErrorsPedido(errs);
-    return Object.keys(errs).length === 0;
-  };
+  useEffect(() => {
+    cargarDatos();
+  }, []);
 
-  const agregarPedido = () => {
-    if (!validarPedido()) return;
-    const id = Date.now();
-    setPedidos(ps => [
-      ...ps,
-      {
-        id,
-        ...nuevoPedido,
-        montoTotal: parseFloat(nuevoPedido.montoTotal),
-        estado: 'Pendiente',
-        guias: []
-      }
-    ]);
-    setSelectedPedidoId(id);
-    setNuevoPedido({ beneficiario: '', montoTotal: '', fecha: '' });
-    setErrorsPedido({});
-    setShowPedidoForm(false);
-  };
-
-  const editarPedido = p => {
-    setShowPedidoForm(true);
-    setNuevoPedido({ beneficiario: p.beneficiario, montoTotal: p.montoTotal, fecha: p.fecha });
-    setSelectedPedidoId(p.id);
-  };
-
-  const eliminarPedido = id => {
-    if (!window.confirm('¿Eliminar este pedido?')) return;
-    setPedidos(ps => ps.filter(p => p.id !== id));
-    if (selectedPedidoId === id) setSelectedPedidoId(null);
-  };
-
-  // —— Guías y facturas —————————————————————————————————
-  const [facturasTemp, setFacturasTemp] = useState([]);
-  const [facturaTemp, setFacturaTemp] = useState({ numero: '', monto: '' });
-  const [editingFacturaIndex, setEditingFacturaIndex] = useState(null);
-  const [errorsFacturaTemp, setErrorsFacturaTemp] = useState({});
-
-  const validarFacturaTemp = () => {
-    const errs = {};
-    if (!facturaTemp.numero) errs.numero = 'Requerido';
-    if (!facturaTemp.monto || isNaN(facturaTemp.monto) || facturaTemp.monto <= 0)
-      errs.monto = 'Número positivo';
-    setErrorsFacturaTemp(errs);
-    return Object.keys(errs).length === 0;
-  };
-
-  const agregarOEditarFactura = () => {
-    if (!validarFacturaTemp()) return;
-    if (editingFacturaIndex !== null) {
-      setFacturasTemp(ft =>
-        ft.map((f, i) => i === editingFacturaIndex ? { ...facturaTemp, monto: parseFloat(facturaTemp.monto) } : f)
-      );
-    } else {
-      setFacturasTemp(ft => [
-        ...ft,
-        { ...facturaTemp, monto: parseFloat(facturaTemp.monto) }
+  const cargarDatos = async () => {
+    setIsLoading(true);
+    try {
+      // Cargar pedidos y proveedores en paralelo
+      const [pedidosResponse, proveedoresResponse] = await Promise.all([
+        axios.get('/api/pedidos/'),
+        axios.get('/api/proveedores/')
       ]);
+
+      // Asegurarse que pedidos sea un array
+      const pedidosData = Array.isArray(pedidosResponse.data) 
+        ? pedidosResponse.data 
+        : (pedidosResponse.data.results || []);
+
+      setPedidos(pedidosData);
+      setProveedores(proveedoresResponse.data);
+    } catch (error) {
+      console.error('Error al cargar datos:', error);
+      toast.error('Error al cargar los datos de pedidos');
+      if (error.response && error.response.status === 401) {
+        window.location.href = '/';
+      }
+      // En caso de error, asegurarse que pedidos sea al menos un array vacío
+      setPedidos([]);
+    } finally {
+      setIsLoading(false);
     }
-    setEditingFacturaIndex(null);
-    setFacturaTemp({ numero: '', monto: '' });
-    setErrorsFacturaTemp({});
   };
 
-  const startEditFactura = idx => {
-    setEditingFacturaIndex(idx);
-    setFacturaTemp(facturasTemp[idx]);
-  };
+  const aplicarFiltros = async () => {
+    setIsLoading(true);
+    try {
+      // Construir parámetros de consulta
+      const params = new URLSearchParams();
+      if (filtros.proveedor) params.append('proveedor', filtros.proveedor);
+      if (filtros.estado) params.append('estado', filtros.estado);
+      if (filtros.fechaDesde) params.append('fecha_desde', filtros.fechaDesde);
+      if (filtros.fechaHasta) params.append('fecha_hasta', filtros.fechaHasta);
 
-  const deleteFacturaTemp = idx => {
-    setFacturasTemp(ft => ft.filter((_, i) => i !== idx));
-    if (editingFacturaIndex === idx) {
-      setEditingFacturaIndex(null);
-      setFacturaTemp({ numero: '', monto: '' });
-      setErrorsFacturaTemp({});
+      const response = await axios.get(`/api/pedidos/?${params.toString()}`);
+      
+      // Asegurarse que los pedidos filtrados sean un array
+      const pedidosData = Array.isArray(response.data) 
+        ? response.data 
+        : (response.data.results || []);
+      
+      setPedidos(pedidosData);
+    } catch (error) {
+      console.error('Error al filtrar pedidos:', error);
+      toast.error('Error al filtrar pedidos');
+      // En caso de error, mantener un array vacío
+      setPedidos([]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const [nuevaGuia, setNuevaGuia] = useState({ guia: '', fecha: '' });
-  const [errorsGuia, setErrorsGuia] = useState({});
-
-  const validarGuia = () => {
-    const errs = {};
-    if (!nuevaGuia.guia) errs.guia = 'Requerido';
-    if (!nuevaGuia.fecha) errs.fecha = 'Requerido';
-    if (facturasTemp.length === 0) errs.facturas = 'Agrega al menos una factura';
-    setErrorsGuia(errs);
-    return Object.keys(errs).length === 0;
-  };
-
-  const agregarGuia = () => {
-    if (!validarGuia() || !selectedPedidoId) return;
-    const totalGuia = facturasTemp.reduce((sum, f) => sum + f.monto, 0);
-    const nueva = {
-      id: Date.now(),
-      guia: nuevaGuia.guia,
-      fecha: nuevaGuia.fecha,
-      facturas: facturasTemp,
-      monto: totalGuia,
-    };
-    setPedidos(ps =>
-      ps.map(p =>
-        p.id === selectedPedidoId
-          ? { ...p, guias: [...p.guias, nueva] }
-          : p
-      )
-    );
-    setNuevaGuia({ guia: '', fecha: '' });
-    setFacturasTemp([]);
-    setEditingFacturaIndex(null);
-    setFacturaTemp({ numero: '', monto: '' });
-    setErrorsGuia({});
-    setErrorsFacturaTemp({});
-    setShowGuiaForm(false);
-  };
-
-  const eliminarGuia = id => {
-    if (!window.confirm('¿Eliminar esta guía?')) return;
-    setPedidos(ps =>
-      ps.map(p =>
-        p.id === selectedPedidoId
-          ? { ...p, guias: p.guias.filter(g => g.id !== id) }
-          : p
-      )
-    );
-  };
-
-  const cerrarRegistro = () => {
-    if (!window.confirm('¿Marcar este pedido como completado?')) return;
-    setPedidos(ps =>
-      ps.map(p =>
-        p.id === selectedPedidoId
-          ? { ...p, estado: 'Completado' }
-          : p
-      )
-    );
-  };
-
-  // —— Filtrado y selección ————————————————————————  
-  const pedidosFiltrados = useMemo(() => {
-    return pedidos.filter(p => {
-      if (estadoFilter !== 'todos' && p.estado !== estadoFilter) return false;
-      return p.beneficiario.toLowerCase().includes(searchTerm.toLowerCase());
+  const resetFiltros = () => {
+    setFiltros({
+      proveedor: '',
+      estado: '',
+      fechaDesde: '',
+      fechaHasta: ''
     });
-  }, [pedidos, searchTerm, estadoFilter]);
+    cargarDatos();
+  };
 
-  const pedidoSeleccionado = pedidos.find(p => p.id === selectedPedidoId) || null;
-  const totalGuias = pedidoSeleccionado?.guias.length || 0;
-  const sumaGuias = pedidoSeleccionado?.guias?.reduce((s, g) => s + g.monto, 0) || 0;
-  const balance = pedidoSeleccionado? pedidoSeleccionado.montoTotal - sumaGuias : 0;
-  const progreso = pedidoSeleccionado? Math.min(100, Math.round((sumaGuias / pedidoSeleccionado.montoTotal) * 100)) : 0;
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFiltros(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const abrirFormulario = (pedido = null) => {
+    setCurrentPedido(pedido);
+    setShowForm(true);
+  };
+
+  const cerrarFormulario = () => {
+    setShowForm(false);
+    setCurrentPedido(null);
+  };
+
+  const eliminarPedido = async (id) => {
+    if (!window.confirm('¿Estás seguro de eliminar este pedido? Esta acción no se puede deshacer.')) {
+      return;
+    }
+
+    try {
+      await axios.delete(`/api/pedidos/${id}/`);
+      setPedidos(pedidos.filter(p => p.id !== id));
+      toast.success('Pedido eliminado correctamente');
+    } catch (error) {
+      console.error('Error al eliminar el pedido:', error);
+      toast.error('Error al eliminar el pedido. Puede que tenga distribuciones o letras asociadas.');
+    }
+  };
+
+  const handleFormSuccess = (pedidoNuevo) => {
+    if (currentPedido) {
+      // Actualización
+      setPedidos(pedidos.map(p => p.id === pedidoNuevo.id ? pedidoNuevo : p));
+    } else {
+      // Creación
+      setPedidos([pedidoNuevo, ...pedidos]);
+    }
+    cerrarFormulario();
+  };
+
+  const formatFecha = (fechaString) => {
+    if (!fechaString) return '-';
+    const fecha = new Date(fechaString);
+    return fecha.toLocaleDateString('es-ES');
+  };
+
+  const formatMonto = (monto) => {
+    return parseFloat(monto || 0).toLocaleString('es-PE', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  };
+
+  const getNombreProveedor = (proveedorId) => {
+    const proveedor = proveedores.find(p => p.id === proveedorId);
+    return proveedor ? proveedor.nombre : '-';
+  };
+
+  const getEstadoClass = (estado) => {
+    switch (estado) {
+      case 'pendiente':
+        return 'bg-yellow-100 text-yellow-800 dark:bg-[#3a3a2a] dark:text-yellow-300';
+      case 'asignado':
+        return 'bg-gray-100 text-gray-800 dark:bg-[#34333a] dark:text-gray-300';
+      case 'completado':
+        return 'bg-green-100 text-green-800 dark:bg-[#2a3a2a] dark:text-green-300';
+      case 'cancelado':
+        return 'bg-red-100 text-red-800 dark:bg-[#3a2a2a] dark:text-red-300';
+      default:
+        return 'bg-gray-100 text-gray-800 dark:bg-[#34333a] dark:text-gray-300';
+    }
+  };
 
   return (
-    <div className="space-y-4 bg-[#232227] text-white p-6 min-h-screen">
-      {/* Botones de acción Agregar Pedido*/}
-      <div className="flex gap-2">
-        <button
-          className="px-3 py-1 bg-green-600 hover:bg-green-500 rounded"
-          onClick={() => setShowPedidoForm(v => !v)}
-        >
-          + Agregar Pedido
-        </button>
+    <div className="container mx-auto">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 md:mb-0">
+          Registro de Pedidos
+        </h1>
+        <div className="flex gap-2">
+          <button
+            onClick={() => abrirFormulario()}
+            className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 dark:bg-[#38373f] dark:hover:bg-[#44434a] focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+          >
+            + Nuevo Pedido
+          </button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* IZQUIERDA: formulario de pedido y listado */}
-        <div className="space-y-4">
-          {showPedidoForm && (
-            <div className="p-4 bg-[#232227] rounded space-y-2">
-              <h2 className="font-semibold">➕ Nuevo Pedido</h2>
-              <label className="block text-sm">Beneficiario</label>
-              <select
-                className="w-full px-2 py-1 rounded bg-gray-700"
-                value={nuevoPedido.beneficiario}
-                onChange={e =>
-                  setNuevoPedido({ ...nuevoPedido, beneficiario: e.target.value })
-                }
-              >
-                <option value="" disabled>-- Seleccionar --</option>
-                {beneficiarios.map(b => (
-                  <option key={b} value={b}>{b}</option>
-                ))}
-              </select>
-              {errorsPedido.beneficiario && (
-                <p className="text-red-400 text-xs">{errorsPedido.beneficiario}</p>
-              )}
-
-              <label className="block text-sm">Monto total</label>
-              <input
-                type="number"
-                className="w-full px-2 py-1 rounded bg-gray-700"
-                value={nuevoPedido.montoTotal}
-                onChange={e =>
-                  setNuevoPedido({ ...nuevoPedido, montoTotal: e.target.value })
-                }
-              />
-              {errorsPedido.montoTotal && (
-                <p className="text-red-400 text-xs">{errorsPedido.montoTotal}</p>
-              )}
-
-              <label className="block text-sm">Fecha pedido</label>
-              <input
-                type="date"
-                className="w-full px-2 py-1 rounded bg-gray-700"
-                value={nuevoPedido.fecha}
-                onChange={e =>
-                  setNuevoPedido({ ...nuevoPedido, fecha: e.target.value })
-                }
-              />
-              {errorsPedido.fecha && (
-                <p className="text-red-400 text-xs">{errorsPedido.fecha}</p>
-              )}
-
-              <button
-                className="w-full bg-blue-600 hover:bg-blue-500 py-1 rounded"
-                onClick={agregarPedido}
-              >
-                Crear y seleccionar
-              </button>
-            </div>
-          )}
-
-          {/* Buscador + filtro */}
-          <div className="flex gap-2">
-            <input
-              type="text"
-              placeholder="🔍 Buscar…"
-              className="flex-1 px-2 py-1 rounded bg-gray-800"
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-            />
+      {/* Filtros */}
+      <div className="bg-white dark:bg-[#2d2c33] rounded-lg shadow p-4 mb-6">
+        <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Filtros</h2>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Proveedor
+            </label>
             <select
-              className="px-2 py-1 rounded bg-gray-700"
-              value={estadoFilter}
-              onChange={e => setEstadoFilter(e.target.value)}
+              name="proveedor"
+              value={filtros.proveedor}
+              onChange={handleFilterChange}
+              className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 bg-white dark:bg-[#38373f] text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
             >
-              <option value="todos">Todos</option>
-              <option value="Pendiente">Pendiente</option>
-              <option value="En proceso">En proceso</option>
-              <option value="Completado">Completado</option>
+              <option value="">Todos los proveedores</option>
+              {proveedores.map(proveedor => (
+                <option key={proveedor.id} value={proveedor.id}>{proveedor.nombre}</option>
+              ))}
             </select>
           </div>
 
-          {/* Lista de pedidos */}
-          <div className="space-y-2 max-h-[60vh] overflow-y-auto">
-            {pedidosFiltrados.map(p => (
-              <div
-                key={p.id}
-                className={`p-3 rounded border flex justify-between items-center cursor-pointer ${
-                  selectedPedidoId === p.id ? 'bg-blue-800' : 'bg-gray-800'
-                }`}
-                onClick={() => setSelectedPedidoId(p.id)}
-              >
-                <div>
-                  <p className="font-semibold">{p.beneficiario}</p>
-                  <p className="text-sm">S/ {p.montoTotal.toLocaleString()}</p>
-                </div>
-                <span
-                  className={`w-3 h-3 rounded-full ${
-                    p.estado === 'Pendiente'
-                      ? 'bg-yellow-400'
-                      : p.estado === 'En proceso'
-                      ? 'bg-blue-400'
-                      : 'bg-green-400'
-                  }`}
-                />
-                <div className="flex space-x-1 ml-4">
-                  <button
-                    className="text-yellow-400 hover:underline text-xs"
-                    onClick={() => editarPedido(p)}
-                  >
-                    Editar
-                  </button>
-                  <button
-                    className="text-red-600 hover:underline text-xs"
-                    onClick={() => eliminarPedido(p.id)}
-                  >
-                    Eliminar
-                  </button>
-                </div>
-              </div>
-            ))}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Estado
+            </label>
+            <select
+              name="estado"
+              value={filtros.estado}
+              onChange={handleFilterChange}
+              className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 bg-white dark:bg-[#38373f] text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
+            >
+              <option value="">Todos</option>
+              <option value="pendiente">Pendiente</option>
+              <option value="asignado">Asignado</option>
+              <option value="completado">Completado</option>
+              <option value="cancelado">Cancelado</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Fecha Desde
+            </label>
+            <input
+              type="date"
+              name="fechaDesde"
+              value={filtros.fechaDesde}
+              onChange={handleFilterChange}
+              className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 bg-white dark:bg-[#38373f] text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Fecha Hasta
+            </label>
+            <input
+              type="date"
+              name="fechaHasta"
+              value={filtros.fechaHasta}
+              onChange={handleFilterChange}
+              className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 bg-white dark:bg-[#38373f] text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
+            />
           </div>
         </div>
+        <div className="flex justify-end space-x-3">
+          <button
+            onClick={resetFiltros}
+            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-[#38373f] hover:bg-gray-50 dark:hover:bg-[#44434a] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+          >
+            Limpiar
+          </button>
+          <button
+            onClick={aplicarFiltros}
+            className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-600 hover:bg-gray-700 dark:bg-[#38373f] dark:hover:bg-[#44434a] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+          >
+            Aplicar Filtros
+          </button>
+        </div>
+      </div>
 
-        {/* DERECHA: resumen y formulario de guías */}
-        {pedidoSeleccionado ? (
-          <div className="space-y-4">
-            {/* Resumen */}
-            <div className="p-4 bg-[#232282] rounded space-y-2">
-              <h2 className="font-semibold">
-                📋 Pedido {pedidoSeleccionado.fecha} – {pedidoSeleccionado.beneficiario}
-              </h2>
-              <p>Total guías: <strong>{totalGuias}</strong></p>
-              <p>Suma facturas: <strong>S/ {sumaGuias.toLocaleString()}</strong></p>
-              <p>Balance restante: <strong>S/ {balance.toLocaleString()}</strong></p>
-              <div className="w-full bg-gray-700 h-2 rounded">
-                <div
-                  className="bg-green-500 h-2 rounded"
-                  style={{ width: `${progreso}%` }}
-                />
-              </div>
-              <p className="text-xs text-gray-400">{progreso}% completado</p>
-              {/* Botones de acción Agregar Guias y Cerrar Guias*/}
-              {pedidoSeleccionado && pedidoSeleccionado.estado !== 'Completado' && (
-                <>
-                    <button
-                    className="px-3 py-1 bg-blue-600 hover:bg-blue-500 rounded"
-                    onClick={() => setShowGuiaForm(v => !v)}
-                    >
-                    + Registrar Guía
-                    </button>
-                    <button
-                    className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded"
-                    onClick={cerrarRegistro}
-                    >
-                    Cerrar Registro
-                    </button>
-                </>
-                )}
-            </div>
-
-            {/* Formulario de Guía */}
-            {showGuiaForm && (
-              <div className="p-4 bg-gray-800 rounded space-y-2">
-                <h2 className="font-semibold">➕ Agregar Guía</h2>
-
-                <label className="block text-sm">N° Guía</label>
-                <input
-                  type="text"
-                  className="w-full px-2 py-1 rounded bg-gray-700"
-                  value={nuevaGuia.guia}
-                  onChange={e => setNuevaGuia({ ...nuevaGuia, guia: e.target.value })}
-                />
-                {errorsGuia.guia && <p className="text-red-400 text-xs">{errorsGuia.guia}</p>}
-
-                <label className="block text-sm">Fecha guía</label>
-                <input
-                  type="date"
-                  className="w-full px-2 py-1 rounded bg-gray-700"
-                  value={nuevaGuia.fecha}
-                  onChange={e => setNuevaGuia({ ...nuevaGuia, fecha: e.target.value })}
-                />
-                {errorsGuia.fecha && <p className="text-red-400 text-xs">{errorsGuia.fecha}</p>}
-
-                {/* Facturas temporales */}
-                <div className="space-y-2">
-                  <h3 className="font-medium">Facturas</h3>
-                  <ul className="space-y-1 max-h-32 overflow-y-auto">
-                    {facturasTemp.map((f, i) => (
-                      <li key={i} className="flex justify-between items-center bg-gray-700 px-2 py-1 rounded">
-                        <span>{f.numero} — S/ {f.monto.toFixed(2)}</span>
-                        <div className="space-x-1">
-                          <button
-                            className="text-yellow-400 hover:underline text-xs"
-                            onClick={() => startEditFactura(i)}
-                          >
-                            Editar
-                          </button>
-                          <button
-                            className="text-red-400 hover:underline text-xs"
-                            onClick={() => deleteFacturaTemp(i)}
-                          >
-                            🗑️
-                          </button>
-                        </div>
-                      </li>
-                    ))}
-                    {facturasTemp.length === 0 && (
-                      <li className="text-gray-400 text-sm italic">No hay facturas.</li>
-                    )}
-                  </ul>
-                </div>
-
-                {/* Añadir/Editar factura */}
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    placeholder="N° Factura"
-                    className="flex-1 px-2 py-1 rounded bg-gray-700"
-                    value={facturaTemp.numero}
-                    onChange={e => setFacturaTemp({ ...facturaTemp, numero: e.target.value })}
-                  />
-                  <input
-                    type="number"
-                    placeholder="Monto"
-                    className="w-32 px-2 py-1 rounded bg-gray-700"
-                    value={facturaTemp.monto}
-                    onChange={e => setFacturaTemp({ ...facturaTemp, monto: e.target.value })}
-                  />
-                  <button
-                    className="px-2 bg-indigo-600 hover:bg-indigo-500 rounded"
-                    onClick={agregarOEditarFactura}
-                  >
-                    {editingFacturaIndex != null ? 'Guardar' : '➕'}
-                  </button>
-                </div>
-                {Object.values(errorsFacturaTemp).map((msg, idx) => (
-                  <p key={idx} className="text-red-400 text-xs">{msg}</p>
-                ))}
-
-                <button
-                  className="w-full bg-blue-600 hover:bg-blue-500 py-1 rounded"
-                  onClick={agregarGuia}
-                >
-                  Registrar Guía
-                </button>
-              </div>
-            )}
-
-            {/* Tabla de Guías */}
-            <div className="overflow-x-auto bg-gray-800 rounded shadow">
-              <table className="min-w-full text-left text-gray-100">
-                <thead>
-                  <tr className="bg-gray-700">
-                    <th className="px-4 py-2">Guía</th>
-                    <th className="px-4 py-2">Facturas</th>
-                    <th className="px-4 py-2">Monto total</th>
-                    <th className="px-4 py-2">Fecha</th>
-                    <th className="px-4 py-2">Acción</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {pedidoSeleccionado.guias.map(g => (
-                    <tr key={g.id} className="border-t border-gray-700">
-                      <td className="px-4 py-2">{g.guia}</td>
-                      <td className="px-4 py-2">
-                        {g.facturas.map((f,i) => (
-                          <div key={i}>{f.numero} (S/{f.monto.toFixed(2)})</div>
-                        ))}
-                      </td>
-                      <td className="px-4 py-2">S/ {g.monto.toLocaleString()}</td>
-                      <td className="px-4 py-2">{g.fecha}</td>
-                      <td className="px-4 py-2">
-                        <button
-                          className="text-red-400 hover:underline text-xs"
-                          onClick={() => eliminarGuia(g.id)}
-                        >
-                          Eliminar
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                  {pedidoSeleccionado.guias.length === 0 && (
-                    <tr>
-                      <td colSpan={5} className="px-4 py-4 text-center text-gray-400">
-                        No hay guías registradas.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+      {/* Tabla de Pedidos */}
+      <div className="bg-white dark:bg-[#2d2c33] shadow rounded-lg overflow-hidden">
+        {isLoading ? (
+          <div className="p-6 text-center">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-500"></div>
+            <p className="mt-2 text-gray-600 dark:text-gray-400">Cargando pedidos...</p>
+          </div>
+        ) : pedidos.length === 0 ? (
+          <div className="p-6 text-center">
+            <p className="text-gray-500 dark:text-gray-400">No hay pedidos registrados.</p>
           </div>
         ) : (
-          <p className="text-gray-400 italic">Selecciona un pedido para añadir guías…</p>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-[#34333a]">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Proveedor
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Fecha
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Monto Total
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Número de Pedido
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Estado
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Acciones
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white dark:bg-[#2d2c33] divide-y divide-gray-200 dark:divide-gray-700">
+                {pedidos.map(pedido => (
+                  <tr key={pedido.id}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
+                      {getNombreProveedor(pedido.proveedor)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      {formatFecha(pedido.fecha_pedido)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      S/ {formatMonto(pedido.monto_total)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      {pedido.numero_pedido || '-'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getEstadoClass(pedido.estado)}`}>
+                        {pedido.estado.charAt(0).toUpperCase() + pedido.estado.slice(1)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <button
+                        onClick={() => abrirFormulario(pedido)}
+                        className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+                      >
+                        Editar
+                      </button>
+                      <span className="mx-2 text-gray-400 dark:text-gray-600">|</span>
+                      <button
+                        onClick={() => eliminarPedido(pedido.id)}
+                        className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
+                      >
+                        Eliminar
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
+
+      {/* Modal de Formulario */}
+      {showForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-[#2d2c33] rounded-lg shadow-lg p-6 w-full max-w-2xl">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                {currentPedido ? 'Editar Pedido' : 'Nuevo Pedido'}
+              </h2>
+              <button 
+                onClick={cerrarFormulario}
+                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+            <FormPedido 
+              handleClose={cerrarFormulario}
+              pedidoActual={currentPedido}
+              onSubmitSuccess={handleFormSuccess}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

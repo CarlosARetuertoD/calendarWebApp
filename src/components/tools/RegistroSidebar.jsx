@@ -4,8 +4,9 @@ const RegistroSidebar = ({
   nuevoLimite,
   setNuevoLimite,
   actualizarLimite,
-  modoMultiple,
-  setModoMultiple,
+  distribuciones,
+  distribucionSeleccionada,
+  setDistribucionSeleccionada,
   fechasSeleccionadas,
   setMostrarFormulario
 }) => {
@@ -29,37 +30,37 @@ const RegistroSidebar = ({
         </button>
       </div>
 
-      {/* Tipo de registro */}
-      <div className="space-y-2">
-        <label className="text-sm font-medium">Tipo de registro</label>
-        <div className="flex flex-col space-y-1">
-          <label className="text-sm">
-            <input
-              type="radio"
-              name="modo"
-              value="individual"
-              checked={!modoMultiple}
-              onChange={() => setModoMultiple(false)}
-              className="mr-2"
-            />
-            Individual
-          </label>
-          <label className="text-sm">
-            <input
-              type="radio"
-              name="modo"
-              value="multiple"
-              checked={modoMultiple}
-              onChange={() => setModoMultiple(true)}
-              className="mr-2"
-            />
-            Múltiple
-          </label>
+      {/* Selección de distribución */}
+      {!distribucionSeleccionada ? (
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Distribuciones disponibles</label>
+          <div className="space-y-1 max-h-40 overflow-y-auto bg-gray-800 rounded p-2 border border-gray-700">
+            {distribuciones.length === 0 ? (
+              <p className="text-sm text-gray-400">No hay distribuciones pendientes</p>
+            ) : (
+              distribuciones.map((dist) => (
+                <button
+                  key={dist.id}
+                  onClick={() => setDistribucionSeleccionada(dist)}
+                  className="block w-full text-left text-sm hover:bg-gray-700 p-1 rounded"
+                >
+                  {dist.pedido_resumen} ({dist.pedido_info?.es_contado ? 'Contado' : 'Crédito'}) - S/ {dist.monto_final}
+                </button>
+              ))
+            )}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="space-y-2 text-sm bg-gray-800 rounded p-3 border border-gray-700">
+          <p><strong>Distribución:</strong> {distribucionSeleccionada.pedido_resumen}</p>
+          <p><strong>Tipo:</strong> {distribucionSeleccionada.pedido_info?.es_contado ? 'Contado' : 'Crédito'}</p>
+          <p><strong>Monto Total:</strong> S/ {distribucionSeleccionada.monto_final}</p>
+          <p><strong>Empresa:</strong> {distribucionSeleccionada.empresa_nombre}</p>
+        </div>
+      )}
 
-      {/* Botón registrar en modo múltiple */}
-      {modoMultiple && (
+      {/* Botón registrar letras múltiples */}
+      {distribucionSeleccionada && (
         <button
           onClick={() => setMostrarFormulario(true)}
           className="w-full bg-green-600 hover:bg-green-500 py-2 rounded text-sm font-semibold"

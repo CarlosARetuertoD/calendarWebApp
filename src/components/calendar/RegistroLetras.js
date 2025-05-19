@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import EventCardModal from '../tools/EventCardModal';
@@ -11,6 +11,7 @@ import dayjs from 'dayjs';
 import weekday from 'dayjs/plugin/weekday';
 import localeData from 'dayjs/plugin/localeData';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
+import axios from 'axios';
 
 dayjs.extend(weekday);
 dayjs.extend(localeData);
@@ -18,7 +19,6 @@ dayjs.extend(customParseFormat);
 dayjs.locale('es');
 const localizer = dayjsLocalizer(dayjs);
 
-// Feriados Perú 2025
 const feriados = [
   '2025-01-01', '2025-04-17', '2025-04-18', '2025-05-01',
   '2025-06-29', '2025-07-28', '2025-07-29', '2025-08-30',
@@ -26,106 +26,90 @@ const feriados = [
 ];
 
 const esDiaNoValido = (date) => {
-  const dia = date.getDay(); // 0 domingo, 6 sábado
   const fechaStr = dayjs(date).format('YYYY-MM-DD');
-  return dia === 0 || dia === 6 || feriados.includes(fechaStr);
+  return date.getDay() === 0 || date.getDay() === 6 || feriados.includes(fechaStr);
 };
 
-const RegistroLetras = ({ eventos: eventosExternos = [] }) => {
-  const [eventos, setEventos] = useState(eventosExternos);
+const RegistroLetras = () => {
+  const [eventos, setEventos] = useState([]);
+  const [distribuciones, setDistribuciones] = useState([]);
+  const [distribucionSeleccionada, setDistribucionSeleccionada] = useState(null);
   const [eventosDelDia, setEventosDelDia] = useState([]);
   const [fechaSeleccionada, setFechaSeleccionada] = useState(null);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [limiteDiario, setLimiteDiario] = useState(5000);
-  const [formulario, setFormulario] = useState({ monto: '', beneficiario: '', numero: '' });
+  const [formulario, setFormulario] = useState({ monto: '' });
   const [fechasSeleccionadas, setFechasSeleccionadas] = useState([]);
-  const [configuracionLetra, setConfiguracionLetra] = useState(null);
   const [nuevoLimite, setNuevoLimite] = useState(limiteDiario);
-  const [modoMultiple, setModoMultiple] = useState(false);
-  const [beneficiarioSeleccionado, setBeneficiarioSeleccionado] = useState('');
 
-  const calcularFechasAutomaticas = (inicio = new Date(), total) => {
-    const frecuencia = configuracionLetra?.frecuenciaDias || 1;
-    const fechas = [];
-    let fecha = new Date(inicio);
+  useEffect(() => {
+    axios.get("/api/letras/")
+      .then((res) => {
+        const letrasFormateadas = res.data.map((letra, index) => {
+          const proveedor = letra.pedido?.split(' ')[0] || 'SinProveedor';
+          const fecha = new Date(`${letra.fecha_pago}T12:00:00`);
 
-    while (fechas.length < total) {
-      if (!esDiaNoValido(fecha)) fechas.push(new Date(fecha));
-      fecha.setDate(fecha.getDate() + frecuencia);
-    }
+          return {
+            title: `${proveedor} - S/${letra.monto} (${letra.empresa} - ${letra.distribucion})`,
+            start: fecha,
+            end: fecha,
+            allDay: true,
+            resource: {
+              numero: `${index + 1}`,
+              monto: parseFloat(letra.monto),
+              proveedor: proveedor,
+              tipo: "Letra",
+              estado: letra.estado,
+              color: letra.color || '#555'
+            }
+          };
+        });
 
-    return fechas;
-  };
+        setEventos(letrasFormateadas);
+      })
+      .catch((err) => {
+        console.error("Error al cargar letras:", err);
+        if (err.response && err.response.status === 401) {
+          window.location.href = '/';
+        }
+      });
+
+    axios.get("/api/distribuciones/no-asignadas/")
+      .then((res) => {
+        setDistribuciones(res.data);
+      })
+      .catch((err) => {
+        console.error("Error al cargar distribuciones:", err);
+        if (err.response && err.response.status === 401) {
+          window.location.href = '/';
+        }
+      });
+  }, []);
 
   const registrarLetrasMultiples = () => {
-    const {
-      montoTotal,
-      modoDivision,
-      numeroLetras,
-      montoPorLetra,
-    } = configuracionLetra;
+    if (!distribucionSeleccionada || !formulario.monto || fechasSeleccionadas.length === 0) return;
 
-    let letras = [];
-
-    if (modoDivision === 'porNumero') {
-      const base = parseFloat((montoTotal / numeroLetras).toFixed(2));
-      const ultima = parseFloat((montoTotal - base * (numeroLetras - 1)).toFixed(2));
-      letras = Array.from({ length: numeroLetras }, (_, i) => (i === numeroLetras - 1 ? ultima : base));
-    } else {
-      const cantidad = Math.floor(montoTotal / montoPorLetra);
-      const restante = parseFloat((montoTotal - montoPorLetra * cantidad).toFixed(2));
-      letras = Array.from({ length: cantidad }, () => montoPorLetra);
-      if (restante > 0) letras.push(restante);
-    }
-
-    const fechas = calcularFechasAutomaticas(new Date(), letras.length);
-    const nuevas = letras.map((monto, i) => ({
-      title: `${beneficiarioSeleccionado} - S/${monto}`,
-      start: fechas[i],
-      end: fechas[i],
-      allDay: true,
-      resource: {
-        numero: `AUTO-${i + 1}`,
-        monto,
-        beneficiario: beneficiarioSeleccionado,
-        tipo: 'Letra'
-      }
+    const payload = fechasSeleccionadas.map((fecha) => ({
+      monto: parseFloat(formulario.monto),
+      fecha_pago: dayjs(fecha).format('YYYY-MM-DD'),
+      distribucion: distribucionSeleccionada.id,
+      empresa: distribucionSeleccionada.empresa,
     }));
 
-    setEventos(prev => [...prev, ...nuevas]);
-    reiniciarFormulario();
-  };
-
-  const agregarLetra = () => {
-    if (modoMultiple && configuracionLetra) {
-      registrarLetrasMultiples();
-      return;
-    }
-
-    if (!formulario.numero || !formulario.monto || !formulario.beneficiario || fechasSeleccionadas.length === 0) return;
-
-    const nuevas = fechasSeleccionadas.map((fecha, index) => ({
-      title: `${formulario.beneficiario} - S/${formulario.monto}`,
-      start: fecha,
-      end: fecha,
-      allDay: true,
-      resource: {
-        numero: `${formulario.numero}-${index + 1}`,
-        monto: Number(formulario.monto),
-        beneficiario: formulario.beneficiario,
-        tipo: 'Letra'
-      }
-    }));
-
-    setEventos(prev => [...prev, ...nuevas]);
-    reiniciarFormulario();
+    axios.post("/api/letras/bulk_create/", payload)
+      .then(() => window.location.reload())
+      .catch((err) => {
+        console.error("Error al registrar letras:", err);
+        if (err.response && err.response.status === 401) {
+          window.location.href = '/';
+        }
+      });
   };
 
   const reiniciarFormulario = () => {
-    setFormulario({ monto: '', beneficiario: '', numero: '' });
+    setFormulario({ monto: '' });
     setFechasSeleccionadas([]);
     setMostrarFormulario(false);
-    setConfiguracionLetra(null);
   };
 
   const handleSelectSlot = (slotInfo) => {
@@ -135,16 +119,11 @@ const RegistroLetras = ({ eventos: eventosExternos = [] }) => {
       return;
     }
 
-    if (!modoMultiple) {
-      setFechasSeleccionadas([fecha]);
-      setMostrarFormulario(true);
-    } else {
-      const existe = fechasSeleccionadas.find(f => f.toDateString() === fecha.toDateString());
-      setFechasSeleccionadas(existe
-        ? fechasSeleccionadas.filter(f => f.toDateString() !== fecha.toDateString())
-        : [...fechasSeleccionadas, fecha]
-      );
-    }
+    const existe = fechasSeleccionadas.find(f => f.toDateString() === fecha.toDateString());
+    setFechasSeleccionadas(existe
+      ? fechasSeleccionadas.filter(f => f.toDateString() !== fecha.toDateString())
+      : [...fechasSeleccionadas, fecha]
+    );
   };
 
   const handleSelectEvent = (evento) => {
@@ -155,16 +134,7 @@ const RegistroLetras = ({ eventos: eventosExternos = [] }) => {
   };
 
   const eventPropGetter = (event) => {
-    const color = {
-      'Pionier': '#1976d2',
-      'Wrangler': '#ff9800',
-      'Norton': '#43a047',
-      'Vowh': '#8e24aa',
-      'Metal': '#fdd835',
-      'Préstamo': '#d81b60',
-      'Deuda Programada': '#6366f1'
-    }[event.resource?.beneficiario] || '#555';
-
+    const color = event.resource?.color || '#555';
     return {
       style: {
         backgroundColor: color,
@@ -187,8 +157,6 @@ const RegistroLetras = ({ eventos: eventosExternos = [] }) => {
   const dayPropGetter = (date) => {
     const dateStr = dayjs(date).format('YYYY-MM-DD');
     const isFeriado = feriados.includes(dateStr);
-    const dia = date.getDay();
-
     const montos = obtenerMontosPorDia();
     const total = montos[date.toDateString()] || 0;
 
@@ -218,33 +186,30 @@ const RegistroLetras = ({ eventos: eventosExternos = [] }) => {
             const valor = parseInt(nuevoLimite);
             if (!isNaN(valor) && valor > 0) setLimiteDiario(valor);
           }}
-          modoMultiple={modoMultiple}
-          setModoMultiple={setModoMultiple}
-          setConfiguracionLetra={setConfiguracionLetra}
-          setMostrarFormulario={setMostrarFormulario}
+          distribuciones={distribuciones}
+          distribucionSeleccionada={distribucionSeleccionada}
+          setDistribucionSeleccionada={setDistribucionSeleccionada}
           fechasSeleccionadas={fechasSeleccionadas}
-          beneficiarioSeleccionado={beneficiarioSeleccionado}
-          setBeneficiarioSeleccionado={setBeneficiarioSeleccionado}
-          registrarDeuda={agregarLetra}
+          setMostrarFormulario={setMostrarFormulario}
         />
       </div>
 
       <div className="w-full md:w-9/12">
         <div className="h-[calc(100vh-5rem)]">
-        <Calendar
-          localizer={localizer}
-          events={eventos}
-          startAccessor="start"
-          endAccessor="end"
-          selectable
-          popup
-          onSelectSlot={handleSelectSlot}
-          onSelectEvent={handleSelectEvent}
-          onDrillDown={() => null}
-          eventPropGetter={eventPropGetter}
-          dayPropGetter={dayPropGetter}
-          components={{ toolbar: RegistroToolbar }}
-        />
+          <Calendar
+            localizer={localizer}
+            events={eventos}
+            startAccessor="start"
+            endAccessor="end"
+            selectable
+            popup
+            onSelectSlot={handleSelectSlot}
+            onSelectEvent={handleSelectEvent}
+            onDrillDown={() => null}
+            eventPropGetter={eventPropGetter}
+            dayPropGetter={dayPropGetter}
+            components={{ toolbar: RegistroToolbar }}
+          />
         </div>
       </div>
 
@@ -253,7 +218,7 @@ const RegistroLetras = ({ eventos: eventosExternos = [] }) => {
           fechas={fechasSeleccionadas}
           form={formulario}
           onChange={(e) => setFormulario({ ...formulario, [e.target.name]: e.target.value })}
-          onSave={agregarLetra}
+          onSave={registrarLetrasMultiples}
           onClose={reiniciarFormulario}
         />
       )}

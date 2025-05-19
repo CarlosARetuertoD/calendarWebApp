@@ -1,130 +1,132 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-.responsive-container {
-    width: full;
-    height: 600px; /* Altura por defecto para pantallas grandes */
-    position: relative;
-  }
-  
-  @media screen and (max-width: 1024px) {
-    .responsive-container {
-      height: 500px;
-    }
-  }
-  
-  @media screen and (max-width: 768px) {
-    .responsive-container {
-      height: 400px;
-    }
-  }
-  
-  @media screen and (max-width: 480px) {
-    .responsive-container {
-      height: 300px;
-    }
-  }
 
-  /* width */
+/* Estilos básicos y de scrollbar */
+body {
+  height: 100vh;
+  @apply bg-bg-main-light dark:bg-bg-main-dark;
+}
+
+/* Scrollbar personalizado */
 ::-webkit-scrollbar {
   width: 10px;
   z-index: -1;
 }
 
-/* Track */
 ::-webkit-scrollbar-track {
-border-radius: 10px;
+  @apply bg-bg-main-light dark:bg-bg-main-dark;
+  border-radius: 10px;
 }
 
-/* Handle */
 ::-webkit-scrollbar-thumb {
-background: #d8d8d8;
-opacity: 10px;
-border-radius: 10px;
-}
-/* Handle */
-::-webkit-scrollbar-thumb:hover{
-background: #c9c9c9;
-opacity: 10px;
-border-radius: 10px;
+  @apply bg-border-light dark:bg-border-dark;
+  opacity: 10px;
+  border-radius: 10px;
 }
 
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-border-light/80 dark:bg-border-dark/80;
+  opacity: 10px;
+  border-radius: 10px;
+}
+
+/* Enlaces activos en navegación */
+.active-nav-link {
+  @apply border-b-2 border-primary text-primary font-semibold;
+}
+
+.active-dropdown-link {
+  @apply bg-bg-row-light dark:bg-bg-row-dark text-primary font-medium;
+}
+
+/* Modo claro/oscuro y transiciones */
 body {
-height: 100vh;
+  @apply transition-colors duration-300;
 }
 
-
-/* Fondo general del calendario */
-.rbc-calendar {
-  background-color: #232227; /* gris oscuro */
-  color: #f9fafb;            /* texto blanco/gris claro */
+/* Transiciones suaves entre modos */
+#navbar, button, a, div:not(.rbc-event), span {
+  @apply transition-colors duration-300;
 }
 
-/* Encabezado superior (toolbar) */
-.rbc-toolbar {
-  background-color: #232227;
-  color: #ffffff;
-  border-bottom: 1px solid #232227;
+/* Estilos globales para tablas */
+.dark table {
+  @apply bg-bg-table-dark text-text-main-dark;
 }
 
-/* Botones de navegación (‹ Hoy ›) */
-.rbc-toolbar button {
-  background-color: #1f2937;
-  color: #f9fafb !important;
-  border: 1px solid #4b5563;
-  padding: 4px 10px;
-  margin: 0 4px;
-  border-radius: 4px;
+.dark th {
+  @apply bg-bg-row-dark text-text-main-dark;
 }
 
-.rbc-toolbar button:hover {
-  background-color: #b64725;
+.dark td {
+  @apply border-border-dark;
 }
 
-/* Encabezado de días (lunes, martes, ...) */
-.rbc-header {
-  background-color: #282c31;
-  color: #f3f4f6;
-  border-bottom: 1px solid #374151;
-  border-right: 1px solid #374151;
-  padding: 8px;
-}
-/* Aplica un fondo celeste claro a los sábados */
-.rbc-month-view .rbc-month-row .rbc-day-bg:nth-child(6) {
-  background-color: #80858B !important;
-}
-/* Días del mes */
-.rbc-month-view {
-  background-color: #f6eff3;
+.dark tbody tr:hover {
+  @apply bg-bg-row-dark;
 }
 
-.rbc-day-bg {
-  background-color: #3b4656;
+/* Contenedor responsivo para gráficos y tablas */
+.responsive-container {
+  @apply w-full h-[600px] relative;
 }
 
-/* Día actual SIEMPRE visible, aunque sea domingo o fuera de mes */
-.rbc-month-view .rbc-date-cell.rbc-now,
-.rbc-month-view .rbc-day-bg.rbc-today {
-  background-color: #1facdf !important; /* azul fuerte */
-  color: white !important;
+@media screen and (max-width: 1024px) {
+  .responsive-container {
+    @apply h-[500px];
+  }
 }
 
-/* Días fuera del mes o domingos */
-.rbc-off-range-bg,
-.rbc-day-bg:nth-child(7n) {
-  background-color: #80858b !important;
-  color: #ffffff;
+@media screen and (max-width: 768px) {
+  .responsive-container {
+    @apply h-[400px];
+  }
 }
 
-/* Popups de eventos */
-.rbc-overlay {
-  background-color: #1f2937;
-  color: white;
-  border: 1px solid #4b5563;
+@media screen and (max-width: 480px) {
+  .responsive-container {
+    @apply h-[300px];
+  }
 }
 
-/* Popups internos */
-.rbc-overlay-header {
-  background-color: #374151;
-  color: white;
+/* Estilos para tablas responsivas */
+.table-responsive {
+  @apply overflow-x-auto;
+  -webkit-overflow-scrolling: touch;
 }
+
+/* Botones en pantallas pequeñas */
+.btn-sm-responsive {
+  @apply px-4 py-2 text-sm;
+}
+
+@media screen and (max-width: 480px) {
+  .btn-sm-responsive {
+    @apply px-3 py-1.5 text-xs w-full mb-2;
+  }
+}
+
+/* Impresión de reportes */
+@media print {
+  .reportes-container {
+    @apply bg-white text-black p-2 text-sm;
+  }
+  
+  .reportes-container h2 {
+    @apply text-lg mb-4;
+  }
+  
+  .reportes-table {
+    @apply w-full border-collapse mt-2.5;
+  }
+  
+  .reportes-table th {
+    @apply bg-gray-100 text-black font-bold p-2 border border-gray-300;
+  }
+  
+  .reportes-table td {
+    @apply p-2 border border-gray-300;
+  }
+}
+
