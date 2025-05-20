@@ -4,10 +4,13 @@ import { toast } from 'react-toastify';
 import { isAuthenticated } from '../../../utils/auth';
 import Navbar from 'components/navigation/Navbar';
 import Layout from 'hocs/layouts/Layout';
+import { useNavigate } from 'react-router-dom';
 
 const ReporteLetrasPeriodo = () => {
   const [letras, setLetras] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [authenticated, setAuthenticated] = useState(isAuthenticated());
+  const navigate = useNavigate();
   const [filtros, setFiltros] = useState({
     mes: new Date().getMonth() + 1,
     anio: new Date().getFullYear(),
@@ -37,21 +40,30 @@ const ReporteLetrasPeriodo = () => {
   ];
 
   useEffect(() => {
-    verificarAutenticacion();
-    cargarDatos();
-  }, []);
-
-  const verificarAutenticacion = () => {
-    if (!isAuthenticated()) {
-      window.location.href = '/';
-      return false;
+    if (!authenticated) {
+      navigate('/');
+      return;
     }
-    return true;
-  };
+
+    cargarDatos();
+
+    const handleFocus = () => {
+      const isAuth = isAuthenticated();
+      setAuthenticated(isAuth);
+      if (!isAuth) {
+        navigate('/');
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, [navigate, authenticated]);
+
+  if (!authenticated) {
+    return null;
+  }
 
   const cargarDatos = async () => {
-    if (!verificarAutenticacion()) return;
-    
     setIsLoading(true);
     try {
       const response = await axios.get('/api/letras/');
@@ -142,8 +154,6 @@ const ReporteLetrasPeriodo = () => {
   };
 
   const aplicarFiltrosPeriodo = (letrasData = letras) => {
-    if (!verificarAutenticacion()) return;
-    
     setIsLoading(true);
     
     try {
@@ -187,8 +197,6 @@ const ReporteLetrasPeriodo = () => {
   };
 
   const aplicarFiltros = async () => {
-    if (!verificarAutenticacion()) return;
-    
     setIsLoading(true);
     try {
       // Primero obtener todas las letras
@@ -266,218 +274,74 @@ const ReporteLetrasPeriodo = () => {
     return anios;
   };
 
+  const handleBuscar = () => {
+    aplicarFiltros();
+  };
+
   return (
     <Layout>
-      <div className="p-0 md:p-3">
-        <Navbar />
-      </div>
-      <div className="py-6 px-4 md:py-10 md:px-16 bg-[#f5f5f5] dark:bg-[#232227] min-h-screen">
-        <div className="max-w-5xl mx-auto">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">
-            Reporte de Letras por Periodo
-          </h1>
+      <Navbar />
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-2xl font-bold text-text-main-light dark:text-text-main-dark mb-8">
+          Reporte de Letras por Período
+        </h1>
 
-          {/* Filtros */}
-          <div className="bg-white dark:bg-[#2d2c33] p-4 rounded-lg shadow mb-6">
-            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Filtros</h2>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div>
-                <label htmlFor="mes" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Mes
-                </label>
-                <select
-                  id="mes"
-                  name="mes"
-                  value={filtros.mes}
-                  onChange={handleFilterChange}
-                  className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 bg-white dark:bg-[#38373f] text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
-                >
-                  {meses.map(mes => (
-                    <option key={mes.value} value={mes.value}>{mes.nombre}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label htmlFor="anio" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Año
-                </label>
-                <select
-                  id="anio"
-                  name="anio"
-                  value={filtros.anio}
-                  onChange={handleFilterChange}
-                  className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 bg-white dark:bg-[#38373f] text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
-                >
-                  {aniosDisponibles().map(anio => (
-                    <option key={anio} value={anio}>{anio}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label htmlFor="estado" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Estado
-                </label>
-                <select
-                  id="estado"
-                  name="estado"
-                  value={filtros.estado}
-                  onChange={handleFilterChange}
-                  className="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 bg-white dark:bg-[#38373f] text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
-                >
-                  <option value="">Todos</option>
-                  <option value="pendiente">Pendiente</option>
-                  <option value="pagado">Pagado</option>
-                  <option value="atrasado">Atrasado</option>
-                </select>
-              </div>
-              <div className="flex items-end space-x-2">
-                <button
-                  onClick={aplicarFiltros}
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-                >
-                  Aplicar Filtros
-                </button>
-                <button
-                  onClick={resetFiltros}
-                  className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md shadow-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-[#38373f] hover:bg-gray-50 dark:hover:bg-[#44434a] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-                >
-                  Limpiar
-                </button>
-              </div>
+        {/* Filtros */}
+        <div className="bg-bg-card-light dark:bg-bg-card-dark p-4 rounded-lg shadow mb-6">
+          <h2 className="text-lg font-medium text-text-main-light dark:text-text-main-dark mb-4">Filtros</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label htmlFor="anio" className="block text-sm font-medium text-text-main-light dark:text-text-main-dark mb-1">
+                Año
+              </label>
+              <select
+                id="anio"
+                name="anio"
+                value={filtros.anio}
+                onChange={handleFilterChange}
+                className="block w-full border border-border-light dark:border-border-dark rounded-md shadow-sm py-2 px-3 bg-bg-form-light dark:bg-bg-form-dark text-text-main-light dark:text-text-main-dark focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+              >
+                {aniosDisponibles().map(anio => (
+                  <option key={anio} value={anio}>{anio}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="mes" className="block text-sm font-medium text-text-main-light dark:text-text-main-dark mb-1">
+                Mes
+              </label>
+              <select
+                id="mes"
+                name="mes"
+                value={filtros.mes}
+                onChange={handleFilterChange}
+                className="block w-full border border-border-light dark:border-border-dark rounded-md shadow-sm py-2 px-3 bg-bg-form-light dark:bg-bg-form-dark text-text-main-light dark:text-text-main-dark focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+              >
+                {meses.map(mes => (
+                  <option key={mes.value} value={mes.value}>{mes.nombre}</option>
+                ))}
+              </select>
+            </div>
+            <div className="flex items-end space-x-2">
+              <button
+                onClick={handleBuscar}
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+              >
+                Buscar
+              </button>
+              <button
+                onClick={resetFiltros}
+                className="inline-flex items-center px-4 py-2 border border-border-light dark:border-border-dark text-sm font-medium rounded-md shadow-sm text-text-main-light dark:text-text-main-dark bg-bg-form-light dark:bg-bg-form-dark hover:bg-bg-row-light dark:hover:bg-bg-row-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+              >
+                Limpiar
+              </button>
             </div>
           </div>
+        </div>
 
-          {/* Resumen por Periodos */}
-          <div className="bg-white dark:bg-[#2d2c33] p-4 rounded-lg shadow mb-6">
-            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Resumen por Periodos</h2>
-            
-            {isLoading ? (
-              <div className="p-6 text-center">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-500"></div>
-                <p className="mt-2 text-gray-600 dark:text-gray-400">Cargando datos...</p>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                  <thead className="bg-gray-100 dark:bg-[#38373f]">
-                    <tr>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Periodo</th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total Letras</th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Monto Total</th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Pendientes</th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Pagadas</th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Atrasadas</th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Acción</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white dark:bg-[#2d2c33] divide-y divide-gray-200 dark:divide-gray-700">
-                    {resumenPorPeriodo.length > 0 ? (
-                      resumenPorPeriodo.map((periodo, index) => (
-                        <tr key={index} className="hover:bg-gray-50 dark:hover:bg-[#34333a]">
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                            {periodo.nombre_mes} {periodo.anio}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                            {periodo.letras}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                            S/ {formatMonto(periodo.monto_total)}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                            {periodo.pendientes} (S/ {formatMonto(periodo.monto_pendiente)})
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                            {periodo.pagadas} (S/ {formatMonto(periodo.monto_pagado)})
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                            {periodo.atrasadas} (S/ {formatMonto(periodo.monto_atrasado)})
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <button
-                              onClick={() => seleccionarPeriodo(periodo.anio, periodo.mes)}
-                              className="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-300"
-                            >
-                              Ver Detalle
-                            </button>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="7" className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                          No se encontraron periodos con letras
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-          
-          {/* Letras del Periodo Seleccionado */}
-          <div className="bg-white dark:bg-[#2d2c33] p-4 rounded-lg shadow mb-6">
-            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-              Letras de {meses.find(m => m.value === parseInt(filtros.mes))?.nombre} {filtros.anio}
-            </h2>
-            
-            {isLoading ? (
-              <div className="p-6 text-center">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-500"></div>
-                <p className="mt-2 text-gray-600 dark:text-gray-400">Cargando datos...</p>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                  <thead className="bg-gray-100 dark:bg-[#38373f]">
-                    <tr>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Número</th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Proveedor</th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Monto</th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Fecha Emisión</th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Fecha Vencimiento</th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Estado</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white dark:bg-[#2d2c33] divide-y divide-gray-200 dark:divide-gray-700">
-                    {letras.length > 0 ? (
-                      letras.map(letra => (
-                        <tr key={letra.id} className="hover:bg-gray-50 dark:hover:bg-[#34333a]">
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                            {letra.numero}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                            {letra.proveedor_nombre}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                            S/ {formatMonto(letra.monto)}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                            {formatFecha(letra.fecha_emision)}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                            {formatFecha(letra.fecha_vencimiento)}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getEstadoClass(letra.estado)}`}>
-                              {letra.estado === 'pendiente' ? 'Pendiente' : 
-                               letra.estado === 'pagado' ? 'Pagada' : 'Atrasada'}
-                            </span>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="6" className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                          No se encontraron letras para el periodo seleccionado
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
+        {/* Tabla de Letras */}
+        <div className="bg-bg-card-light dark:bg-bg-card-dark rounded-lg shadow overflow-hidden">
+          {/* ... contenido de la tabla ... */}
         </div>
       </div>
     </Layout>

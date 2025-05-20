@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import Navbar from "components/navigation/Navbar";
 import Layout from "hocs/layouts/Layout";
-import BigCalendar from "components/calendar/BigCalendar";
+import BigCalendar from "components/componentes/BigCalendar";
 import { isAuthenticated } from "../../utils/auth";
 import { useNavigate } from "react-router-dom";
 

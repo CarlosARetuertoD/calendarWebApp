@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Loader from "components/tools/Loader";
+import Loader from "../tools/Loader";
 import { login } from '../../utils/auth';
 
 export default function Login() {

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import EventCardModal from '../tools/EventCardModal';
-import NuevaLetraModal from '../tools/NuevaLetraModal';
-import RegistroToolbar from '../tools/RegistroToolbar';
-import RegistroSidebar from '../tools/RegistroSidebar';
+import EventCardModal from '../modales/EventCardModal';
+import NuevaLetraModal from '../modales/NuevaLetraModal';
+import RegistroToolbar from '../navigation/RegistroToolbar';
+import RegistroSidebar from '../navigation/RegistroSidebar';
 import 'dayjs/locale/es';
 import { dayjsLocalizer } from 'react-big-calendar';
 import dayjs from 'dayjs';

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "components/navigation/Navbar";
 import Layout from "hocs/layouts/Layout";
 import LogViewer from "components/administracion/LogViewer";
-import { isAuthenticated, hasRole } from "../../utils/auth";
+import { isAuthenticated, hasRole } from "../../../utils/auth";
 import { toast } from "react-toastify";
 
 function LogsActividad() {

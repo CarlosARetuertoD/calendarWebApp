@@ -195,12 +195,8 @@ const RegistroPedidos = () => {
     }
     
     // Calcular información adicional del pedido para el contexto
-    const montoDistribuido = pedido.distribuciones_finales?.reduce(
-      (sum, dist) => sum + parseFloat(dist.monto_final || 0), 
-      0
-    ) || 0;
-    
-    const montoDisponible = parseFloat(pedido.monto_total_pedido) - montoDistribuido;
+    const montoDistribuido = calcularMontoDistribuido(pedido);
+    const montoDisponible = calcularMontoDisponible(pedido);
     
     // Navegar a la página de distribuciones con el ID del pedido y datos adicionales
     navigate('/distribuciones', { 
@@ -217,6 +213,18 @@ const RegistroPedidos = () => {
     });
   };
 
+  const calcularMontoDistribuido = (pedido) => {
+    return pedido.distribuciones_finales?.reduce(
+      (sum, dist) => sum + parseFloat(dist.monto_final || 0), 
+      0
+    ) || 0;
+  };
+
+  const calcularMontoDisponible = (pedido) => {
+    const montoDistribuido = calcularMontoDistribuido(pedido);
+    return parseFloat(pedido.monto_total_pedido) - montoDistribuido;
+  };
+
   const completarPedido = async (id) => {
     if (!window.confirm('¿Estás seguro de marcar este pedido como asignado? Esta acción registrará la distribución del pedido.')) {
       return;
@@ -229,10 +237,7 @@ const RegistroPedidos = () => {
       if (!pedidoActual) return;
 
       // Calcular el monto final basado en las distribuciones
-      const montoDistribuido = pedidoActual.distribuciones_finales?.reduce(
-        (sum, dist) => sum + parseFloat(dist.monto_final || 0), 
-        0
-      ) || 0;
+      const montoDistribuido = calcularMontoDistribuido(pedidoActual);
 
       // Actualizar el pedido con los nuevos valores
       const response = await axios.put(`/api/pedidos/${id}/`, {

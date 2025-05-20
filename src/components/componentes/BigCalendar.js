@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Calendar } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import EventCardModal from '../tools/EventCardModal';
-import CustomToolbar from '../tools/CustomToolbar'; 
+import EventCardModal from '../modales/EventCardModal';
+import CustomToolbar from '../navigation/CustomToolbar'; 
 import 'dayjs/locale/es'; 
 import { dayjsLocalizer } from 'react-big-calendar';
 import dayjs from 'dayjs';

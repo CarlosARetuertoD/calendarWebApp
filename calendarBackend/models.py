@@ -205,7 +205,6 @@ class DistribucionFinal(models.Model):
                                           help_text="Monto disponible para asignar en letras")
     completado = models.BooleanField(default=False)
     fecha_distribucion = models.DateField(auto_now_add=True)
-    notas = models.TextField(blank=True)
     # Campos de auditoría
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

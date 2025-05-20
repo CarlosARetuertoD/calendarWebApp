@@ -80,20 +80,35 @@ export const login = async (username, password) => {
 // Cerrar sesión
 export const logout = async () => {
   try {
+    // Llamar al endpoint de logout en el backend
     await axios.post('/api/auth/logout/');
-    
-    // Limpiar datos de autenticación
+    // Limpiar datos locales
     localStorage.removeItem('authToken');
     localStorage.removeItem('userData');
-    
+    localStorage.removeItem('theme');
+    enableRedirectOn401 = false;
+    setTimeout(() => {
+      window.location.replace('/');
+    }, 100);
     return { success: true };
   } catch (error) {
     console.error('Error al cerrar sesión:', error);
-    // Aún así, limpiamos los datos locales
+    if (error.response) {
+      console.error('Detalles del error:', {
+        status: error.response.status,
+        data: error.response.data,
+        headers: error.response.headers
+      });
+    }
+    // Limpiar datos locales aunque haya error
     localStorage.removeItem('authToken');
     localStorage.removeItem('userData');
-    
-    return { success: false, error: 'Error al cerrar sesión' };
+    localStorage.removeItem('theme');
+    enableRedirectOn401 = false;
+    setTimeout(() => {
+      window.location.replace('/');
+    }, 100);
+    return { success: false, error };
   }
 };
 

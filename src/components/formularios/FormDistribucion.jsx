@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-const FormDistribucion = ({ handleClose, distribucionActual = null, pedidoId = null, onSubmitSuccess, montoDisponible = null }) => {
+const FormDistribucion = ({ handleClose, distribucionActual = null, pedidoId = null, onSubmitSuccess, montoDisponibleInicial = null }) => {
   const [empresas, setEmpresas] = useState([]);
   const [pedidoInfo, setPedidoInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -11,6 +11,8 @@ const FormDistribucion = ({ handleClose, distribucionActual = null, pedidoId = n
     monto_final: ''
   });
   const [errors, setErrors] = useState({});
+  const [distribucionesParciales, setDistribucionesParciales] = useState([]);
+  const [empresasDisponibles, setEmpresasDisponibles] = useState([]);
 
   useEffect(() => {
     // Cargar empresas
@@ -18,6 +20,7 @@ const FormDistribucion = ({ handleClose, distribucionActual = null, pedidoId = n
       try {
         const response = await axios.get('/api/empresas/');
         setEmpresas(response.data);
+        setEmpresasDisponibles(response.data);
       } catch (error) {
         console.error("Error al cargar empresas:", error);
         toast.error("No se pudieron cargar las empresas");
@@ -56,19 +59,19 @@ const FormDistribucion = ({ handleClose, distribucionActual = null, pedidoId = n
 
   // Sugerir monto disponible como valor predeterminado
   useEffect(() => {
-    if (montoDisponible !== null && !distribucionActual && !formData.monto_final) {
+    if (montoDisponibleInicial !== null && !distribucionActual && !formData.monto_final) {
       setFormData(prev => ({
         ...prev,
-        monto_final: montoDisponible.toString()
+        monto_final: montoDisponibleInicial.toString()
       }));
     }
-  }, [montoDisponible, distribucionActual]);
+  }, [montoDisponibleInicial, distribucionActual]);
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
     setFormData(prevData => ({
       ...prevData,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: value
     }));
     
     // Limpiar error al cambiar el valor
@@ -88,9 +91,9 @@ const FormDistribucion = ({ handleClose, distribucionActual = null, pedidoId = n
     if (formData.monto_final && isNaN(formData.monto_final)) newErrors.monto_final = "El monto debe ser un número";
     
     // Verificar que el monto no exceda el disponible en el pedido
-    if (formData.monto_final && pedidoInfo && !distribucionActual) {
-      const montoAsignado = pedidoInfo.distribuciones_finales?.reduce((sum, dist) => sum + parseFloat(dist.monto_final), 0) || 0;
-      const montoDisponible = parseFloat(pedidoInfo.monto_total_pedido) - montoAsignado;
+    if (formData.monto_final && pedidoInfo) {
+      const montoTotalDistribuido = distribucionesParciales.reduce((sum, dist) => sum + parseFloat(dist.monto_final), 0);
+      const montoDisponible = parseFloat(pedidoInfo.monto_total_pedido) - montoTotalDistribuido;
       
       if (parseFloat(formData.monto_final) > montoDisponible) {
         newErrors.monto_final = `El monto excede el disponible (S/ ${montoDisponible.toFixed(2)})`;
@@ -101,214 +104,286 @@ const FormDistribucion = ({ handleClose, distribucionActual = null, pedidoId = n
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e, saveAndAddAnother = false, completarPedido = false) => {
-    e.preventDefault();
-    
+  const seleccionarEmpresa = (empresa) => {
+    setFormData(prev => ({
+      ...prev,
+      empresa: empresa.id.toString()
+    }));
+  };
+
+  const agregarDistribucionParcial = () => {
     if (!validateForm()) return;
+
+    const empresaSeleccionada = empresas.find(e => e.id === parseInt(formData.empresa));
+    const nuevaDistribucion = {
+      empresa: empresaSeleccionada,
+      monto_final: parseFloat(formData.monto_final)
+    };
+
+    setDistribucionesParciales([...distribucionesParciales, nuevaDistribucion]);
     
+    // Actualizar empresas disponibles
+    setEmpresasDisponibles(empresasDisponibles.filter(e => e.id !== empresaSeleccionada.id));
+    
+    // Limpiar el formulario
+    setFormData({
+      empresa: '',
+      monto_final: ''
+    });
+    setErrors({});
+  };
+
+  const eliminarDistribucionParcial = (index) => {
+    const distribucionAEliminar = distribucionesParciales[index];
+    setDistribucionesParciales(distribucionesParciales.filter((_, i) => i !== index));
+    
+    // Devolver la empresa a las disponibles
+    setEmpresasDisponibles([...empresasDisponibles, distribucionAEliminar.empresa]);
+  };
+
+  const calcularMontoDistribuido = (pedido) => {
+    // Sumar el monto de las distribuciones existentes del pedido
+    const montoDistribucionesExistentes = pedido.distribuciones_finales?.reduce(
+      (sum, dist) => sum + parseFloat(dist.monto_final || 0), 
+      0
+    ) || 0;
+
+    // Sumar el monto de las distribuciones parciales
+    const montoDistribucionesParciales = distribucionesParciales.reduce(
+      (sum, dist) => sum + parseFloat(dist.monto_final || 0),
+      0
+    );
+
+    return montoDistribucionesExistentes + montoDistribucionesParciales;
+  };
+
+  const calcularMontoDisponible = (pedido) => {
+    const montoDistribuido = calcularMontoDistribuido(pedido);
+    return parseFloat(pedido.monto_total_pedido) - montoDistribuido;
+  };
+
+  const montoDisponible = pedidoInfo ? calcularMontoDisponible(pedidoInfo) : 0;
+
+  const completarDistribucion = async () => {
+    if (distribucionesParciales.length === 0) {
+      toast.error("Debe agregar al menos una distribución");
+      return;
+    }
+
     setIsLoading(true);
     
     try {
-      const submitData = {
-        ...formData,
-        monto_final: parseFloat(formData.monto_final),
-        pedido: pedidoId || distribucionActual?.pedido
-      };
-      
-      let response;
-      
-      if (distribucionActual) {
-        // Actualizar distribución existente
-        response = await axios.put(`/api/distribuciones/${distribucionActual.id}/`, submitData);
-        toast.success("Distribución actualizada correctamente");
-      } else {
-        // Crear nueva distribución
-        response = await axios.post('/api/distribuciones/', submitData);
-        toast.success("Distribución creada correctamente");
-      }
-      
-      if (onSubmitSuccess) onSubmitSuccess(response.data, false); // No cerrar el modal después de éxito
-      
-      // Opcionalmente completar el pedido
-      if (completarPedido) {
-        const pedidoActualId = pedidoId || distribucionActual?.pedido;
-        if (pedidoActualId) {
-          try {
-            await axios.patch(`/api/pedidos/${pedidoActualId}/`, {
-              estado: 'completado',
-              completado: true
-            });
-            toast.success("Pedido marcado como completado");
-            handleClose(); // Cerramos el modal solo si se completó el pedido
-            return;
-          } catch (error) {
-            console.error("Error al marcar pedido como completado:", error);
-            toast.error("Error al marcar el pedido como completado");
-          }
-        }
-      }
-      
-      // Si estamos editando o agregando otra, o simplemente guardando y quedándonos en el form
-      if (distribucionActual || saveAndAddAnother) {
-        // Recargar información del pedido para tener datos actualizados
-        try {
-          const pedidoActualId = pedidoId || distribucionActual?.pedido;
-          if (pedidoActualId) {
-            const updatedPedidoResponse = await axios.get(`/api/pedidos/${pedidoActualId}/`);
-            setPedidoInfo(updatedPedidoResponse.data);
-          }
-          // Limpiar el formulario para una nueva distribución
-          if (!distribucionActual) {
-            setFormData({
-              empresa: '',
-              monto_final: ''
-            });
-          }
-          setErrors({});
-        } catch (error) {
-          console.error("Error al recargar información del pedido:", error);
-        }
-      } else {
-        handleClose();
-      }
+      // Crear todas las distribuciones
+      const distribucionesCreadas = await Promise.all(
+        distribucionesParciales.map(dist => 
+          axios.post('/api/distribuciones/', {
+            pedido: pedidoId,
+            empresa: dist.empresa.id,
+            monto_final: dist.monto_final,
+            completado: false // Siempre pendiente por defecto
+          })
+        )
+      );
+
+      // Calcular el monto total distribuido
+      const montoTotalDistribuido = distribucionesParciales.reduce(
+        (sum, dist) => sum + parseFloat(dist.monto_final), 
+        0
+      );
+
+      // Actualizar el estado del pedido a asignado y el monto final
+      await axios.patch(`/api/pedidos/${pedidoId}/`, {
+        estado: 'asignado',
+        monto_final_pedido: montoTotalDistribuido
+      });
+
+      toast.success("Distribuciones creadas y pedido marcado como asignado");
+      handleClose();
+      if (onSubmitSuccess) onSubmitSuccess(distribucionesCreadas.map(r => r.data));
     } catch (error) {
-      console.error("Error al guardar la distribución:", error);
-      
-      if (error.response && error.response.data) {
-        // Mostrar errores del backend
-        const backendErrors = error.response.data;
-        const formattedErrors = {};
-        
-        Object.keys(backendErrors).forEach(key => {
-          formattedErrors[key] = Array.isArray(backendErrors[key]) 
-            ? backendErrors[key][0] 
-            : backendErrors[key];
-        });
-        
-        setErrors(formattedErrors);
-      } else {
-        toast.error("Error al guardar la distribución");
-      }
+      console.error("Error al completar la distribución:", error);
+      toast.error("Error al completar la distribución");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Calcular montos del pedido para mostrar información
-  const montoAsignado = pedidoInfo?.distribuciones_finales?.reduce(
-    (sum, dist) => {
-      // No contar la distribución actual si estamos editando
-      if (distribucionActual && dist.id === distribucionActual.id) return sum;
-      return sum + parseFloat(dist.monto_final);
-    },
-    0
-  ) || 0;
-  
-  // Usar el montoDisponible de prop si está disponible, de lo contrario calcularlo
-  const montoDisponibleCalculado = pedidoInfo 
-    ? parseFloat(pedidoInfo.monto_total_pedido) - montoAsignado 
-    : 0;
-    
-  // Valor final: priorizar el prop, luego el cálculo interno
-  const montoDisponibleFinal = montoDisponible !== null ? montoDisponible : montoDisponibleCalculado;
-  
-  // Si estamos editando, sumar el monto actual de la distribución al disponible
-  const montoDisponibleTotal = distribucionActual 
-    ? montoDisponibleFinal + parseFloat(distribucionActual.monto_final || 0) 
-    : montoDisponibleFinal;
+  // Función para asignar un color fijo basado en el índice
+  const getEmpresaColor = (index) => {
+    const colors = [
+      'bg-yellow-500/10 dark:bg-yellow-500/20 border-yellow-500/30 dark:border-yellow-500/40 text-yellow-700 dark:text-yellow-300',
+      'bg-green-500/10 dark:bg-green-500/20 border-green-500/30 dark:border-green-500/40 text-green-700 dark:text-green-300',
+      'bg-purple-500/10 dark:bg-purple-500/20 border-purple-500/30 dark:border-purple-500/40 text-purple-700 dark:text-purple-300',
+      'bg-orange-500/10 dark:bg-orange-500/20 border-orange-500/30 dark:border-orange-500/40 text-orange-700 dark:text-orange-300',
+      'bg-teal-500/10 dark:bg-teal-500/20 border-teal-500/30 dark:border-teal-500/40 text-teal-700 dark:text-teal-300',
+    ];
+    return colors[index % 5];
+  };
 
   return (
-    <form onSubmit={(e) => handleSubmit(e, false, false)} className="space-y-6">
+    <div className="space-y-6">
       {pedidoInfo && (
-        <div className="p-4 bg-gray-50 dark:bg-[#34333a] rounded-md mb-4">
-          <h3 className="text-sm font-medium text-gray-800 dark:text-gray-300">
+        <div className="p-4 bg-bg-form-light dark:bg-bg-form-dark rounded-md mb-4 border border-border-light dark:border-border-dark">
+          <h3 className="text-sm font-medium text-text-main-light dark:text-text-main-dark">
             Pedido: {pedidoInfo.proveedor?.nombre || pedidoInfo.proveedor_nombre || 'Sin proveedor'} - S/ {parseFloat(pedidoInfo.monto_total_pedido).toFixed(2)} - {pedidoInfo.es_contado ? 'Contado' : 'Crédito'}
           </h3>
-          <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            <span className="font-medium">Monto asignado:</span> S/ {montoAsignado.toFixed(2)}
+          <div className="mt-2 text-sm text-text-secondary-light dark:text-text-secondary-dark">
+            <span className="font-medium">Monto distribuido:</span> S/ {calcularMontoDistribuido(pedidoInfo).toFixed(2)}
           </div>
-          <div className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            <span className="font-medium">Monto disponible:</span> S/ {montoDisponibleTotal.toFixed(2)}
+          <div className="mt-1 text-sm text-text-secondary-light dark:text-text-secondary-dark">
+            <span className="font-medium">Monto disponible:</span> S/ {montoDisponible.toFixed(2)}
           </div>
         </div>
       )}
 
-      <div className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Empresa <span className="text-red-500">*</span>
-          </label>
-          <select
-            name="empresa"
-            className={`block w-full border ${errors.empresa ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'} rounded-md shadow-sm py-2 px-3 bg-white dark:bg-[#38373f] text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm`}
-            value={formData.empresa}
-            onChange={handleChange}
+      {/* Tabla de distribuciones parciales */}
+      {distribucionesParciales.length > 0 && (
+        <div className="mt-6">
+          <h3 className="text-lg font-medium text-text-main-light dark:text-text-main-dark mb-4">Distribuciones Parciales</h3>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-border-light dark:divide-border-dark">
+              <thead className="bg-bg-row-light dark:bg-bg-row-dark">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary-light dark:text-text-secondary-dark uppercase tracking-wider">
+                    Empresa
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary-light dark:text-text-secondary-dark uppercase tracking-wider">
+                    Monto
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-text-secondary-light dark:text-text-secondary-dark uppercase tracking-wider">
+                    Acciones
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-bg-card-light dark:bg-bg-card-dark divide-y divide-border-light dark:divide-border-dark">
+                {distribucionesParciales.map((dist, index) => (
+                  <tr key={index} className="hover:bg-bg-row-light dark:hover:bg-bg-row-dark">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-text-main-light dark:text-text-main-dark">
+                      {dist.empresa.nombre}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary-light dark:text-text-secondary-dark">
+                      S/ {parseFloat(dist.monto_final).toFixed(2)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <button
+                        onClick={() => eliminarDistribucionParcial(index)}
+                        className="text-error hover:text-error/90 dark:text-error/90 dark:hover:text-error"
+                      >
+                        Eliminar
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {empresasDisponibles.length > 0 && montoDisponible > 0 ? (
+        <div className="space-y-4">
+          {/* Grid de empresas disponibles */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+            {empresasDisponibles.map((empresa, index) => {
+              const empresaColor = getEmpresaColor(index);
+              return (
+                <div
+                  key={empresa.id}
+                  onClick={() => seleccionarEmpresa(empresa)}
+                  className={`group relative p-2 rounded-md border cursor-pointer transition-all duration-200 ${
+                    formData.empresa === empresa.id.toString()
+                      ? 'scale-105 shadow-lg ring-2 ring-primary/50'
+                      : 'hover:scale-105 hover:shadow-md'
+                  } ${empresaColor}`}
+                >
+                  <div className="flex flex-col">
+                    <h4 className={`font-medium text-sm ${
+                      formData.empresa === empresa.id.toString() 
+                        ? 'text-primary dark:text-primary/90' 
+                        : ''
+                    }`}>
+                      {empresa.nombre}
+                    </h4>
+                    <div className="mt-1 flex items-center">
+                      <span className="text-xs font-medium opacity-75">RUC:</span>
+                      <span className="ml-1 text-xs">
+                        {empresa.ruc}
+                      </span>
+                    </div>
+                  </div>
+                  <div className={`absolute inset-0 rounded-md transition-opacity duration-200 ${
+                    formData.empresa === empresa.id.toString()
+                      ? 'bg-primary/5 dark:bg-primary/10'
+                      : 'opacity-0 group-hover:opacity-100 bg-white/5 dark:bg-white/10'
+                  }`} />
+                </div>
+              );
+            })}
+          </div>
+
+          {formData.empresa && (
+            <div className="mt-2 p-2 bg-primary/5 dark:bg-primary/10 rounded-md border border-primary/20">
+              <p className="text-sm text-text-main-light dark:text-text-main-dark">
+                Empresa seleccionada: <span className="font-medium">{empresas.find(e => e.id.toString() === formData.empresa)?.nombre}</span>
+              </p>
+            </div>
+          )}
+
+          <div>
+            <label className="block text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark mb-1">
+              Monto de Distribución (S/) <span className="text-error">*</span>
+            </label>
+            <input
+              type="number"
+              name="monto_final"
+              step="0.01"
+              min="0"
+              max={montoDisponible}
+              className={`block w-full border ${errors.monto_final ? 'border-error' : 'border-border-light dark:border-border-dark'} rounded-md shadow-sm py-2 px-3 bg-bg-form-light dark:bg-bg-form-dark text-text-main-light dark:text-text-main-dark focus:outline-none focus:ring-primary focus:border-primary sm:text-sm`}
+              value={formData.monto_final}
+              onChange={handleChange}
+            />
+            {errors.monto_final && <p className="mt-1 text-sm text-error">{errors.monto_final}</p>}
+          </div>
+
+          <button
+            type="button"
+            onClick={agregarDistribucionParcial}
+            disabled={!formData.empresa || !formData.monto_final}
+            className="w-full px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <option value="">Seleccionar empresa</option>
-            {empresas.map(empresa => (
-              <option key={empresa.id} value={empresa.id}>
-                {empresa.nombre}
-              </option>
-            ))}
-          </select>
-          {errors.empresa && <p className="mt-1 text-sm text-red-500">{errors.empresa}</p>}
+            Agregar Distribución
+          </button>
         </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Monto de Distribución (S/) <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="number"
-            name="monto_final"
-            step="0.01"
-            min="0"
-            className={`block w-full border ${errors.monto_final ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'} rounded-md shadow-sm py-2 px-3 bg-white dark:bg-[#38373f] text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm`}
-            value={formData.monto_final}
-            onChange={handleChange}
-          />
-          {errors.monto_final && <p className="mt-1 text-sm text-red-500">{errors.monto_final}</p>}
+      ) : (
+        <div className="text-center py-4">
+          <p className="text-text-secondary-light dark:text-text-secondary-dark">
+            {montoDisponible <= 0 
+              ? 'No hay monto disponible para distribuir'
+              : 'No hay empresas disponibles para distribuir'}
+          </p>
         </div>
-      </div>
+      )}
 
-      <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+      <div className="flex justify-end space-x-3 pt-4 border-t border-border-light dark:border-border-dark">
         <button
           type="button"
-          className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-[#38373f] hover:bg-gray-50 dark:hover:bg-[#44434a] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+          className="px-4 py-2 border border-border-light dark:border-border-dark rounded-md shadow-sm text-sm font-medium text-text-main-light dark:text-text-main-dark bg-bg-form-light dark:bg-bg-form-dark hover:bg-bg-row-light dark:hover:bg-bg-row-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
           onClick={handleClose}
           disabled={isLoading}
         >
           Cancelar
         </button>
-        {!distribucionActual && pedidoId && (
-          <>
-            <button
-              type="button"
-              className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              onClick={(e) => handleSubmit(e, true)}
-              disabled={isLoading}
-            >
-              {isLoading ? 'Guardando...' : 'Guardar y agregar otra'}
-            </button>
-            <button
-              type="button"
-              className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              onClick={(e) => handleSubmit(e, false, true)}
-              disabled={isLoading}
-            >
-              {isLoading ? 'Procesando...' : 'Guardar y Completar Pedido'}
-            </button>
-          </>
-        )}
         <button
-          type="submit"
-          className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
-          disabled={isLoading}
+          type="button"
+          className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-success hover:bg-success-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-success disabled:opacity-50 disabled:cursor-not-allowed"
+          onClick={completarDistribucion}
+          disabled={isLoading || distribucionesParciales.length === 0}
         >
-          {isLoading ? 'Guardando...' : distribucionActual ? 'Actualizar' : 'Guardar'}
+          {isLoading ? 'Procesando...' : 'Completar Distribución'}
         </button>
       </div>
-    </form>
+    </div>
   );
 };
 

@@ -7,18 +7,36 @@
   color-scheme: dark;
 }
 
+/* Aplicar tema oscuro por defecto */
 html {
-  visibility: hidden;
-}
-
-html.theme-loaded {
-  visibility: visible;
+  @apply bg-bg-main-dark text-text-main-dark;
 }
 
 /* Estilos básicos y de scrollbar */
 body {
   height: 100vh;
   @apply bg-bg-main-light dark:bg-bg-main-dark;
+}
+
+/* Transiciones suaves para el tema */
+html, body, #root {
+  @apply transition-colors duration-500 ease-in-out;
+}
+
+/* Transiciones suaves para elementos específicos */
+.bg-bg-main-light,
+.bg-bg-main-dark,
+.bg-bg-card-light,
+.bg-bg-card-dark,
+.bg-bg-row-light,
+.bg-bg-row-dark,
+.text-text-main-light,
+.text-text-main-dark,
+.text-text-secondary-light,
+.text-text-secondary-dark,
+.border-border-light,
+.border-border-dark {
+  @apply transition-colors duration-500 ease-in-out;
 }
 
 /* Scrollbar personalizado */
@@ -51,7 +69,7 @@ body {
 
 /* Modo claro/oscuro y transiciones */
 body {
-  @apply transition-colors duration-300;
+  @apply transition-colors duration-500 ease-in-out;
 }
 
 /* Transiciones suaves entre modos */
@@ -60,7 +78,7 @@ button:not(.login-button),
 a:not(.login-link), 
 div:not(.rbc-event):not(.login-container), 
 span:not(.login-text) {
-  @apply transition-colors duration-300;
+  @apply transition-colors duration-500 ease-in-out;
 }
 
 /* Estilos globales para tablas */

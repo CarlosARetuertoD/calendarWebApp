@@ -9,14 +9,14 @@ import axios from 'axios';
 import Error404 from 'containers/errors/Error404';
 import Login from 'containers/pages/Login'
 import Calendar from 'containers/pages/Calendar'
-import RegistroLetras from 'containers/pages/RegistroLetras'
-import PaginaRegistroPedidos from 'containers/pages/RegistroPedidos'
-import PaginaRegistroDistribuciones from 'containers/pages/RegistroDistribuciones'
-import RegistroDocumentos from 'containers/pages/RegistroDocumentos'
-import Registros from 'containers/pages/Registros'
-import Administracion from 'containers/pages/Administracion'
-import LogsActividad from 'containers/pages/LogsActividad'
-import RespaldoSistema from 'containers/pages/RespaldoSistema'
+import RegistroLetras from 'containers/pages/registros/RegistroLetras'
+import PaginaRegistroPedidos from 'containers/pages/registros/RegistroPedidos'
+import PaginaRegistroDistribuciones from 'containers/pages/registros/RegistroDistribuciones'
+import RegistroDocumentos from 'containers/pages/registros/RegistroDocumentos'
+import Registros from 'containers/pages/registros/Registros'
+import Administracion from 'containers/pages/administracion/Administracion'
+import LogsActividad from 'containers/pages/administracion/LogsActividad'
+import RespaldoSistema from 'containers/pages/administracion/RespaldoSistema'
 import Dashboard from 'containers/pages/Dashboard'
 
 // Reportes
