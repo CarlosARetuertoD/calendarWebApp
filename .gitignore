@@ -14,10 +14,6 @@ media/              # Solo si usas archivos subidos
 .env.production
 *.sqlite3
 
-# React build files (generados automáticamente)
-build/
-
-
 # Node modules (React frontend)
 node_modules/
 
