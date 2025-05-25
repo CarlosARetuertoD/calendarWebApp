@@ -1,19 +1,24 @@
 # create_superuser.py
 
 from django.contrib.auth import get_user_model
-from django.db.utils import IntegrityError
 
 def run():
     User = get_user_model()
     username = "admin"
     email = "admin@example.com"
-    password = "admin"  # Cámbiala después
+    password = "contraseña_super_segura"
 
-    if not User.objects.filter(username=username).exists():
-        try:
-            User.objects.create_superuser(username, email, password)
-            print("Superusuario creado exitosamente.")
-        except IntegrityError:
-            print("Ya existe un superusuario.")
+    user, created = User.objects.get_or_create(username=username, defaults={"email": email})
+    if created:
+        user.set_password(password)
+        user.is_superuser = True
+        user.is_staff = True
+        user.save()
+        print("Superusuario creado exitosamente.")
     else:
-        print("El superusuario ya existe.")
+        # ⚠️ Esto es temporal solo para resetear la password en el deploy
+        user.set_password(password)
+        user.is_superuser = True
+        user.is_staff = True
+        user.save()
+        print("Superusuario EXISTENTE, contraseña ACTUALIZADA.")
