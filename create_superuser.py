@@ -7,7 +7,7 @@ def run():
     User = get_user_model()
     username = "admin"
     email = "admin@example.com"
-    password = "contraseña_super_segura"  # Cámbiala después
+    password = "admin"  # Cámbiala después
 
     if not User.objects.filter(username=username).exists():
         try:
