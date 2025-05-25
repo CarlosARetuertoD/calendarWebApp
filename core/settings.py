@@ -10,8 +10,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('SECRET_KEY', default='dfksdf7y2834y723647623467234623kjhsdf')
 
-DEBUG = 'RENDER' not in os.environ
-#DEBUG = True
+#DEBUG = 'RENDER' not in os.environ
+DEBUG = True
 ALLOWED_HOSTS = ['*','127.0.0.1', 'localhost','127.0.0.0']
 
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
@@ -90,18 +90,18 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-#DATABASES = {
-   # 'default': {
-   #     'ENGINE': 'django.db.backends.sqlite3',
-  #      'NAME': BASE_DIR / 'db.sqlite3',
-    #}
-#}
-
 DATABASES = {
-    'default': dj_database_url.config(
-       default='sqlite:///db.sqlite3',
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
+
+#DATABASES = {
+   # 'default': dj_database_url.config(
+   #    default='sqlite:///db.sqlite3',
+   # )
+#}
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',

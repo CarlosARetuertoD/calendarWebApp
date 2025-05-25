@@ -4,7 +4,8 @@ import { toast } from 'react-toastify';
 import FormDistribucion from '../formularios/FormDistribucion';
 import { useLocation } from 'react-router-dom';
 import TablaPedidosPendientes from '../tablas/TablaPedidosPendientes';
-import TablaRegistroDistribuciones from '../tablas/TablaRegistroDistribuciones';
+import CardPedidoAsignado from '../cards/CardPedidoAsignado';
+import ModalDistribucionesPedido from '../modales/ModalDistribucionesPedido';
 
 const RegistroDistribuciones = () => {
   const location = useLocation();
@@ -17,6 +18,7 @@ const RegistroDistribuciones = () => {
   const [currentDistribucion, setCurrentDistribucion] = useState(null);
   const [selectedPedidoId, setSelectedPedidoId] = useState(null);
   const [showPedidoSelector, setShowPedidoSelector] = useState(false);
+  const [selectedPedido, setSelectedPedido] = useState(null);
   const [filtros, setFiltros] = useState({
     pedido: '',
     empresa: '',
@@ -283,6 +285,11 @@ const RegistroDistribuciones = () => {
     ) || 0;
   };
 
+  // Filtrar pedidos que tienen distribuciones
+  const pedidosConDistribuciones = pedidos.filter(pedido => 
+    distribuciones.some(dist => dist.pedido === pedido.id)
+  );
+
   return (
     <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-6 bg-bg-main-light dark:bg-bg-main-dark">
       <div className="flex flex-col md:flex-row justify-between items-center mb-4 md:mb-6">
@@ -422,14 +429,37 @@ const RegistroDistribuciones = () => {
         </div>
       )}
 
-      {/* Tabla de Distribuciones */}
-      <TablaRegistroDistribuciones
-        distribuciones={distribuciones}
-        pedidos={pedidos}
-        empresas={empresas}
-        isLoading={isLoading}
-        onEliminarDistribucion={eliminarDistribucion}
-      />
+      {/* Grid de Cards de Pedidos */}
+      {isLoading ? (
+        <div className="text-center py-8">
+          <p className="text-text-secondary-light dark:text-text-secondary-dark">Cargando pedidos...</p>
+        </div>
+      ) : pedidosConDistribuciones.length === 0 ? (
+        <div className="text-center py-8">
+          <p className="text-text-secondary-light dark:text-text-secondary-dark">No hay pedidos con distribuciones.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {pedidosConDistribuciones.map(pedido => (
+            <CardPedidoAsignado
+              key={pedido.id}
+              pedido={pedido}
+              distribuciones={distribuciones.filter(d => d.pedido === pedido.id)}
+              onClick={() => setSelectedPedido(pedido)}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Modal de Distribuciones */}
+      {selectedPedido && (
+        <ModalDistribucionesPedido
+          pedido={selectedPedido}
+          distribuciones={distribuciones.filter(d => d.pedido === selectedPedido.id)}
+          empresas={empresas}
+          onClose={() => setSelectedPedido(null)}
+        />
+      )}
     </div>
   );
 };

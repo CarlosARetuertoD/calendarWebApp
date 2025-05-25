@@ -59,6 +59,75 @@ module.exports = {
         'login-button-text': '#000000',     // Texto negro para el botón
         'login-button-hover-text': '#FFFFFF', // Texto blanco para hover del botón
         'login-focus-ring': '#FFFFFF',      // Anillo de focus negro
+
+        // Colores del Calendario
+        'calendar': {
+          // Toolbar - Barra superior con controles de navegación
+          'toolbar-bg-light': '#ffffff',      // Fondo de la barra en modo claro
+          'toolbar-bg-dark': '#1f2937',       // Fondo de la barra en modo oscuro
+          'toolbar-text-light': '#1f2937',    // Texto de la barra en modo claro
+          'toolbar-text-dark': '#f9fafb',     // Texto de la barra en modo oscuro
+          'toolbar-border-light': '#e5e7eb',  // Bordes de la barra en modo claro
+          'toolbar-border-dark': '#374151',   // Bordes de la barra en modo oscuro
+          
+          // Headers - Encabezados de los días de la semana
+          'header-bg-light': '#f3f4f6',       // Fondo de encabezados en modo claro
+          'header-bg-dark': '#374151',        // Fondo de encabezados en modo oscuro
+          'header-text-light': '#1f2937',     // Texto de encabezados en modo claro
+          'header-text-dark': '#f9fafb',      // Texto de encabezados en modo oscuro
+          'header-border-light': '#e5e7eb',   // Bordes de encabezados en modo claro
+          'header-border-dark': '#4b5563',    // Bordes de encabezados en modo oscuro
+          
+          // Month View - Vista mensual del calendario
+          'month-bg-light': '#ffffff',        // Fondo del calendario en modo claro
+          'month-bg-dark': '#1f2937',         // Fondo del calendario en modo oscuro
+          'month-border-light': '#e5e7eb',    // Bordes del calendario en modo claro
+          'month-border-dark': '#374151',     // Bordes del calendario en modo oscuro
+          
+          // Day Cells - Celdas individuales de los días
+          'day-bg-light': '#ffffff',          // Fondo de celdas en modo claro
+          'day-bg-dark': '#1f2937',           // Fondo de celdas en modo oscuro
+          'day-text-light': '#1f2937',        // Texto de celdas en modo claro
+          'day-text-dark': '#f9fafb',         // Texto de celdas en modo oscuro
+          'day-border-light': '#e5e7eb',      // Bordes de celdas en modo claro
+          'day-border-dark': '#374151',       // Bordes de celdas en modo oscuro
+          
+          // Today - Día actual
+          'today-bg-light': '#e0f2fe',        // Fondo del día actual en modo claro
+          'today-bg-dark': '#1e3a8a',         // Fondo del día actual en modo oscuro
+          'today-text-light': '#0369a1',      // Texto del día actual en modo claro
+          'today-text-dark': '#93c5fd',       // Texto del día actual en modo oscuro
+          
+          // Off Range Days - Días fuera del mes actual
+          'offrange-bg-light': '#f9fafb',     // Fondo de días fuera del mes en modo claro
+          'offrange-bg-dark': '#111827',      // Fondo de días fuera del mes en modo oscuro
+          'offrange-text-light': '#9ca3af',   // Texto de días fuera del mes en modo claro
+          'offrange-text-dark': '#6b7280',    // Texto de días fuera del mes en modo oscuro
+          
+          // Events - Eventos del calendario
+          'event-bg-light': '#3b82f6',        // Fondo de eventos en modo claro
+          'event-bg-dark': '#2563eb',         // Fondo de eventos en modo oscuro
+          'event-text-light': '#ffffff',      // Texto de eventos en modo claro
+          'event-text-dark': '#ffffff',       // Texto de eventos en modo oscuro
+          
+          // Overlays - Popups y ventanas emergentes
+          'overlay-bg-light': '#ffffff',      // Fondo de popups en modo claro
+          'overlay-bg-dark': '#1f2937',       // Fondo de popups en modo oscuro
+          'overlay-text-light': '#1f2937',    // Texto de popups en modo claro
+          'overlay-text-dark': '#f9fafb',     // Texto de popups en modo oscuro
+          'overlay-border-light': '#e5e7eb',  // Bordes de popups en modo claro
+          'overlay-border-dark': '#374151',   // Bordes de popups en modo oscuro
+          
+          // Time Indicators - Indicadores de hora actual
+          'time-indicator-light': '#ef4444',  // Color del indicador en modo claro
+          'time-indicator-dark': '#dc2626',   // Color del indicador en modo oscuro
+          
+          // Selection - Elementos seleccionados
+          'selection-bg-light': '#dbeafe',    // Fondo de selección en modo claro
+          'selection-bg-dark': '#1e40af',     // Fondo de selección en modo oscuro
+          'selection-text-light': '#1e40af',  // Texto de selección en modo claro
+          'selection-text-dark': '#93c5fd',   // Texto de selección en modo oscuro
+        }
       },
       
       animation: {

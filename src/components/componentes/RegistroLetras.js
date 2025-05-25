@@ -134,15 +134,17 @@ const RegistroLetras = () => {
   };
 
   const eventPropGetter = (event) => {
-    const color = event.resource?.color || '#555';
-    return {
-      style: {
-        backgroundColor: color,
-        color: 'white',
-        borderRadius: '4px',
-        padding: '6px 4px'
-      }
-    };
+    const beneficiario = event.resource?.beneficiario;
+    let className = 'bg-blue-600 text-white rounded px-1 py-1.5 border-none';
+
+    if (beneficiario === 'Pionier') className = 'bg-blue-600 text-white rounded px-1 py-1.5 border-none';
+    else if (beneficiario === 'Wrangler') className = 'bg-orange-500 text-white rounded px-1 py-1.5 border-none';
+    else if (beneficiario === 'Norton') className = 'bg-green-600 text-white rounded px-1 py-1.5 border-none';
+    else if (beneficiario === 'Vowh') className = 'bg-purple-600 text-white rounded px-1 py-1.5 border-none';
+    else if (beneficiario === 'Metal') className = 'bg-yellow-500 text-white rounded px-1 py-1.5 border-none';
+    else if (beneficiario === 'Préstamo') className = 'bg-red-600 text-white rounded px-1 py-1.5 border-none';
+
+    return { className };
   };
 
   const obtenerMontosPorDia = () => {
@@ -160,25 +162,28 @@ const RegistroLetras = () => {
     const montos = obtenerMontosPorDia();
     const total = montos[date.toDateString()] || 0;
 
-    const base = '#3b4656', verde = '#34d399', amarillo = '#d4c750', rojo = '#f87171', sel = '#7c3aed', feriado = '#80858B';
-    let style = { backgroundColor: base };
+    let className = 'bg-gray-700';
 
-    if (isFeriado) style.backgroundColor = feriado;
-    else if (total > limiteDiario) style.backgroundColor = rojo;
-    else if (total >= limiteDiario * 0.7) style.backgroundColor = amarillo;
-    else if (total > 0) style.backgroundColor = verde;
-
-    if (fechasSeleccionadas.some(f => f.toDateString() === date.toDateString())) {
-      style.backgroundColor = sel;
-      style.border = '2px solid white';
+    if (isFeriado) {
+      className = 'bg-gray-500';
+    } else if (total > limiteDiario) {
+      className = 'bg-red-400';
+    } else if (total >= limiteDiario * 0.7) {
+      className = 'bg-yellow-400';
+    } else if (total > 0) {
+      className = 'bg-green-400';
     }
 
-    return { style };
+    if (fechasSeleccionadas.some(f => f.toDateString() === date.toDateString())) {
+      className = 'bg-purple-600 border-2 border-white';
+    }
+
+    return { className };
   };
 
   return (
     <div className="flex flex-col-reverse md:flex-row w-full min-h-screen">
-      <div className="w-full h-[calc(100vh-5rem)] md:w-3/12" style={{ backgroundColor: '#232227' }}>
+      <div className="w-full h-[calc(100vh-5rem)] md:w-3/12 bg-gray-800">
         <RegistroSidebar
           nuevoLimite={nuevoLimite}
           setNuevoLimite={setNuevoLimite}
@@ -194,7 +199,7 @@ const RegistroLetras = () => {
         />
       </div>
 
-      <div className="w-full md:w-9/12">
+      <div className="w-full md:w-9/12 bg-gray-100 dark:bg-gray-900">
         <div className="h-[calc(100vh-5rem)]">
           <Calendar
             localizer={localizer}
@@ -209,6 +214,38 @@ const RegistroLetras = () => {
             eventPropGetter={eventPropGetter}
             dayPropGetter={dayPropGetter}
             components={{ toolbar: RegistroToolbar }}
+            className="[&_.rbc-calendar]:bg-calendar-month-bg-light dark:[&_.rbc-calendar]:bg-calendar-month-bg-dark
+                      [&_.rbc-toolbar]:bg-calendar-toolbar-bg-light dark:[&_.rbc-toolbar]:bg-calendar-toolbar-bg-dark
+                      [&_.rbc-toolbar]:text-calendar-toolbar-text-light dark:[&_.rbc-toolbar]:text-calendar-toolbar-text-dark
+                      [&_.rbc-toolbar]:border-calendar-toolbar-border-light dark:[&_.rbc-toolbar]:border-calendar-toolbar-border-dark
+                      
+                      [&_.rbc-header]:bg-calendar-header-bg-light dark:[&_.rbc-header]:bg-calendar-header-bg-dark
+                      [&_.rbc-header]:text-calendar-header-text-light dark:[&_.rbc-header]:text-calendar-header-text-dark
+                      [&_.rbc-header]:border-calendar-header-border-light dark:[&_.rbc-header]:border-calendar-header-border-dark
+                      
+                      [&_.rbc-month-view]:border-calendar-month-border-light dark:[&_.rbc-month-view]:border-calendar-month-border-dark
+                      
+                      [&_.rbc-day-bg]:bg-calendar-day-bg-light dark:[&_.rbc-day-bg]:bg-calendar-day-bg-dark
+                      [&_.rbc-day-bg]:text-calendar-day-text-light dark:[&_.rbc-day-bg]:text-calendar-day-text-dark
+                      [&_.rbc-day-bg]:border-calendar-day-border-light dark:[&_.rbc-day-bg]:border-calendar-day-border-dark
+                      
+                      [&_.rbc-today]:bg-calendar-today-bg-light dark:[&_.rbc-today]:bg-calendar-today-bg-dark
+                      [&_.rbc-today]:text-calendar-today-text-light dark:[&_.rbc-today]:text-calendar-today-text-dark
+                      
+                      [&_.rbc-off-range-bg]:bg-calendar-offrange-bg-light dark:[&_.rbc-off-range-bg]:bg-calendar-offrange-bg-dark
+                      [&_.rbc-off-range-bg]:text-calendar-offrange-text-light dark:[&_.rbc-off-range-bg]:text-calendar-offrange-text-dark
+                      
+                      [&_.rbc-event]:bg-calendar-event-bg-light dark:[&_.rbc-event]:bg-calendar-event-bg-dark
+                      [&_.rbc-event]:text-calendar-event-text-light dark:[&_.rbc-event]:text-calendar-event-text-dark
+                      
+                      [&_.rbc-overlay]:bg-calendar-overlay-bg-light dark:[&_.rbc-overlay]:bg-calendar-overlay-bg-dark
+                      [&_.rbc-overlay]:text-calendar-overlay-text-light dark:[&_.rbc-overlay]:text-calendar-overlay-text-dark
+                      [&_.rbc-overlay]:border-calendar-overlay-border-light dark:[&_.rbc-overlay]:border-calendar-overlay-border-dark
+                      
+                      [&_.rbc-current-time-indicator]:bg-calendar-time-indicator-light dark:[&_.rbc-current-time-indicator]:bg-calendar-time-indicator-dark
+                      
+                      [&_.rbc-selected]:bg-calendar-selection-bg-light dark:[&_.rbc-selected]:bg-calendar-selection-bg-dark
+                      [&_.rbc-selected]:text-calendar-selection-text-light dark:[&_.rbc-selected]:text-calendar-selection-text-dark"
           />
         </div>
       </div>

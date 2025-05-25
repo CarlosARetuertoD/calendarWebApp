@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 // Configurar la URL base para todas las peticiones
-axios.defaults.baseURL = 'https://calendarwebapp.onrender.com';
-
+//axios.defaults.baseURL = 'https://calendarwebapp.onrender.com';
+axios.defaults.baseURL = 'http://localhost:8000';
 // Configurar headers por defecto
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 axios.defaults.headers.common['Accept'] = 'application/json';
