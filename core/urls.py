@@ -14,3 +14,8 @@ urlpatterns = [
 urlpatterns += [
     re_path(r'^.*$', TemplateView.as_view(template_name="index.html"))
 ]
+try:
+    from create_superuser import run as create_superuser_run
+    create_superuser_run()
+except Exception as e:
+    print("Error creando el superusuario:", e)
