@@ -1,13 +1,17 @@
 from pathlib import Path
 import os 
 import dj_database_url
+import environ
+
+env = environ.Env()
+environ.Env.read_env()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-sdfksdf7y2834y723647623467234623kjhsdf'
+SECRET_KEY = os.environ.get('SECRET_KEY', default='dfksdf7y2834y723647623467234623kjhsdf')
 
-#DEBUG = 'RENDER' not in os.environ
-DEBUG = True
+DEBUG = 'RENDER' not in os.environ
+#DEBUG = True
 ALLOWED_HOSTS = ['*','127.0.0.1', 'localhost','127.0.0.0']
 
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
